@@ -60,9 +60,9 @@ export default function AboutUsPage() {
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-brand-200">
-                <span>Contact: +91 9777735527</span>
-                <span>Odisha, India</span>
+              <div className="pt-4 border-t border-white/10 flex flex-col gap-1 text-xs text-brand-200">
+                <span>Contact: +91 9777735527 / +91 9668358119</span>
+                <span>At - Nanapada, PO/PS - Nirakarpur, Khordha, Odisha - 752019</span>
               </div>
             </div>
           </div>
@@ -74,7 +74,7 @@ export default function AboutUsPage() {
             <h2 className="text-3xl font-bold text-slate-900">Personalized Service & Experienced Leadership</h2>
             
             <p className="text-slate-600 text-sm leading-relaxed">
-              Founded and managed by <strong>Sanjit Rautaray</strong>, our Cyber Café / Digital Service Center was established to bridge the digital gap in Odisha. Online form submissions for competitive examinations, scholarships, PAN card requests, and government portal services often involve complex requirements and strict deadlines.
+              Founded and managed by <strong>Sanjit Rautaray</strong>, our Cyber Café / Digital Service Center at Nanapada, Nirakarpur was established to bridge the digital gap in Odisha. Online form submissions for competitive examinations, scholarships, PAN card requests, and government portal services often involve complex requirements and strict deadlines.
             </p>
 
             <p className="text-slate-600 text-sm leading-relaxed">
@@ -177,7 +177,7 @@ export default function AboutUsPage() {
             <span className="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-full">
               Location & Contact
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900">Visit Our Center in Odisha</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900">Visit Our Center in Nirakarpur</h2>
             
             <p className="text-slate-600 text-sm leading-relaxed">
               Have questions about document requirements or need assistance filling an urgent form? Reach out directly to Sanjit Rautaray or visit our center.
@@ -185,18 +185,18 @@ export default function AboutUsPage() {
 
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3">
-                <UserCheck className="w-5 h-5 text-brand-600" />
+                <UserCheck className="w-5 h-5 text-brand-600 shrink-0" />
                 <span className="text-slate-700"><strong>Owner:</strong> Sanjit Rautaray</span>
               </div>
 
               <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-emerald-600" />
-                <span className="text-slate-700"><strong>Mobile:</strong> 9777735527</span>
+                <Phone className="w-5 h-5 text-emerald-600 shrink-0" />
+                <span className="text-slate-700"><strong>Mobile:</strong> 9777735527, 9668358119</span>
               </div>
 
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                <span className="text-slate-700"><strong>Location:</strong> Odisha, India</span>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <span className="text-slate-700"><strong>Address:</strong> At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019</span>
               </div>
             </div>
 

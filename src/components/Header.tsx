@@ -26,6 +26,7 @@ export default function Header() {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'About Us', href: '/about-us' },
+    { name: 'Courses', href: '/courses' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Contact Us', href: '/contact-us' },
   ];
@@ -35,20 +36,24 @@ export default function Header() {
       <div className="bg-navy-800 text-slate-300 text-xs py-1.5 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-blue-400" />
-              <span>Odisha, India</span>
+            <span className="flex items-center gap-1.5 truncate max-w-md sm:max-w-none">
+              <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              <span>At - Nanapada, Nirakarpur, Khordha, Odisha - 752019</span>
             </span>
-            <span className="hidden sm:inline text-slate-500">|</span>
-            <span className="hidden sm:flex items-center gap-1.5">
+            <span className="hidden lg:inline text-slate-500">|</span>
+            <span className="hidden lg:flex items-center gap-1.5">
               <span className="text-slate-400">Owner:</span>
               <strong className="text-white font-medium">Sanjit Rautaray</strong>
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <a href="tel:9777735527" className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Phone className="w-3.5 h-3.5 text-blue-400" />
-              <span>+91 9777735527</span>
+          <div className="flex items-center gap-3 text-[11px] sm:text-xs">
+            <a href="tel:9777735527" className="flex items-center gap-1 hover:text-white transition-colors">
+              <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>9777735527</span>
+            </a>
+            <span className="text-slate-500">/</span>
+            <a href="tel:9668358119" className="hover:text-white transition-colors">
+              <span>9668358119</span>
             </a>
           </div>
         </div>

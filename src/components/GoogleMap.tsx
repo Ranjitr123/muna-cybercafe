@@ -11,21 +11,21 @@ interface GoogleMapProps {
 
 export default function GoogleMap({
   mapUrl = process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL ||
-    'https://maps.google.com/maps?q=Muna%20Tech%20World%20Shop%2C%20Odisha&t=&z=15&ie=UTF8&iwloc=&output=embed',
+    'https://maps.google.com/maps?q=Nanapada%2C%20Nirakarpur%2C%20Khordha%2C%20Odisha%20752019&t=&z=15&ie=UTF8&iwloc=&output=embed',
   directMapLink = process.env.NEXT_PUBLIC_GOOGLE_MAPS_DIRECT_URL ||
-    'https://maps.app.goo.gl/UWQocbBw4R4p5tgu8',
+    'https://maps.google.com/maps?q=Nanapada%2C%20Nirakarpur%2C%20Khordha%2C%20Odisha%20752019',
   className = '',
 }: GoogleMapProps) {
   return (
     <div className={`relative w-full rounded-2xl overflow-hidden shadow-md border border-slate-200 bg-slate-100 ${className}`}>
       {/* Location Badge Header */}
-      <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-xl shadow-md border border-slate-100 flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+      <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-md px-4 py-2 rounded-xl shadow-md border border-slate-100 flex items-center gap-2.5 max-w-[90%] sm:max-w-md">
+        <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
           <MapPin className="w-4 h-4" />
         </div>
         <div>
-          <span className="block text-xs font-bold text-slate-900">Muna Tech World Shop</span>
-          <span className="block text-[11px] text-slate-500 font-medium">Cyber Café & Digital Services • Odisha</span>
+          <span className="block text-xs font-bold text-slate-900">Muna Tech World / Cyber Café</span>
+          <span className="block text-[11px] text-slate-600 font-medium truncate">At - Nanapada, PO/PS - Nirakarpur, Khordha - 752019</span>
         </div>
       </div>
 

@@ -9,7 +9,7 @@ interface FooterProps {
   adminEmail?: string;
 }
 
-export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'ranjitrautaray475@gmail.com' }: FooterProps) {
+export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'sanjit007muna@gmail.com' }: FooterProps) {
   const [modalType, setModalType] = useState<'privacy' | 'terms' | null>(null);
 
   return (
@@ -50,6 +50,11 @@ export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAI
               <li>
                 <Link href="/about-us" className="hover:text-white transition-colors inline-flex items-center gap-2">
                   <ArrowRight className="w-3.5 h-3.5 text-brand-400" /> About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/courses" className="hover:text-white transition-colors inline-flex items-center gap-2">
+                  <ArrowRight className="w-3.5 h-3.5 text-brand-400" /> Computer Courses
                 </Link>
               </li>
               <li>
@@ -96,18 +101,25 @@ export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAI
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-brand-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block font-medium text-white">Location</span>
-                  <span className="text-slate-400 text-xs">Odisha, India</span>
+                  <span className="block font-medium text-white">Business Address</span>
+                  <span className="text-slate-400 text-xs leading-relaxed block">
+                    At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019
+                  </span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block font-medium text-white">Owner: Sanjit Rautaray</span>
-                  <a href="tel:9777735527" className="text-slate-300 hover:text-white font-semibold">
-                    +91 9777735527
-                  </a>
+                  <span className="block font-medium text-white">Mobile / WhatsApp</span>
+                  <div className="flex flex-col text-slate-300 text-xs gap-0.5 font-semibold">
+                    <a href="tel:9777735527" className="hover:text-white transition-colors">
+                      +91 9777735527
+                    </a>
+                    <a href="tel:9668358119" className="hover:text-white transition-colors">
+                      +91 9668358119
+                    </a>
+                  </div>
                 </div>
               </div>
 

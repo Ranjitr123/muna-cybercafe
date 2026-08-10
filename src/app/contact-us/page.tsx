@@ -8,11 +8,11 @@ import GoogleMap from '@/components/GoogleMap';
 export const metadata: Metadata = {
   title: 'Contact Us | Cyber Cafe & Online Services',
   description:
-    'Contact Sanjit Rautaray at Cyber Café / Digital Service Center in Odisha. Mobile: 9777735527. Online form filling, PAN card assistance, ticket booking, printing, and scanning.',
+    'Contact Sanjit Rautaray at Cyber Café / Digital Service Center. Address: At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019. Mob: 9777735527, 9668358119.',
 };
 
 export default function ContactUsPage() {
-  const adminEmail = process.env.ADMIN_EMAIL || 'ranjitrautaray475@gmail.com';
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'sanjit007muna@gmail.com';
 
   return (
     <div className="space-y-12 md:space-y-16 pb-16">
@@ -61,9 +61,14 @@ export default function ContactUsPage() {
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-slate-400">Mobile & WhatsApp</span>
-                    <a href="tel:9777735527" className="text-brand-700 font-bold text-lg hover:underline block">
-                      +91 9777735527
-                    </a>
+                    <div className="space-y-1 mt-0.5">
+                      <a href="tel:9777735527" className="text-brand-700 font-bold text-base hover:underline block">
+                        +91 9777735527
+                      </a>
+                      <a href="tel:9668358119" className="text-brand-700 font-bold text-base hover:underline block">
+                        +91 9668358119
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -72,7 +77,7 @@ export default function ContactUsPage() {
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="block text-xs font-medium text-slate-400">Configurable Email</span>
+                    <span className="block text-xs font-medium text-slate-400">Email</span>
                     <a href={`mailto:${adminEmail}`} className="text-slate-700 font-semibold text-sm hover:underline break-all">
                       {adminEmail}
                     </a>
@@ -84,10 +89,9 @@ export default function ContactUsPage() {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="block text-xs font-medium text-slate-400">Address & Location</span>
-                    <span className="text-slate-800 font-semibold block">Odisha, India</span>
-                    <span className="text-slate-500 text-xs mt-0.5 block">
-                      (Configurable business address placeholder)
+                    <span className="block text-xs font-medium text-slate-400">Business Address</span>
+                    <span className="text-slate-800 font-semibold block leading-snug text-sm">
+                      At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019
                     </span>
                   </div>
                 </div>
@@ -104,15 +108,24 @@ export default function ContactUsPage() {
               </div>
 
               <div className="pt-4 border-t space-y-3">
-                <a
-                  href="tel:9777735527"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-colors shadow-sm"
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>Click to Call (9777735527)</span>
-                </a>
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href="tel:9777735527"
+                    className="inline-flex items-center justify-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-2 rounded-xl text-xs transition-colors shadow-sm text-center"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call 9777735527</span>
+                  </a>
+                  <a
+                    href="tel:9668358119"
+                    className="inline-flex items-center justify-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-2 rounded-xl text-xs transition-colors shadow-sm text-center"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call 9668358119</span>
+                  </a>
+                </div>
 
-                <WhatsAppButton variant="inline" label="Chat on WhatsApp" className="w-full py-3.5 text-sm" />
+                <WhatsAppButton variant="inline" label="Chat on WhatsApp" className="w-full py-3 text-sm" />
               </div>
             </div>
 
@@ -144,7 +157,7 @@ export default function ContactUsPage() {
           <span className="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-full">
             Interactive Map
           </span>
-          <h2 className="text-2xl font-extrabold text-slate-900">Our Location Map (Odisha, India)</h2>
+          <h2 className="text-2xl font-extrabold text-slate-900">Our Location Map (Nanapada, Nirakarpur, Khordha)</h2>
         </div>
 
         <GoogleMap className="h-[420px]" />

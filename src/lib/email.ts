@@ -124,7 +124,7 @@ export async function sendEnquiryEmails(payload: EmailPayload): Promise<{ adminS
 
         <hr style="margin-top: 30px; border: none; border-top: 1px solid #e2e8f0;" />
         <p style="font-size: 12px; color: #94a3b8; text-align: center;">
-          Cyber Café & Digital Service Center | Odisha, India | Contact: 9777735527
+          Cyber Café & Digital Service Center | At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, Odisha - 752019 | Contact: 9777735527, 9668358119
         </p>
       </div>
     `;

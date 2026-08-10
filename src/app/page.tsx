@@ -12,6 +12,8 @@ import {
   Sparkles
 } from 'lucide-react';
 import ServiceCard, { ServiceItem } from '@/components/ServiceCard';
+import CourseCard from '@/components/CourseCard';
+import { coursesData } from '@/lib/coursesData';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import Gallery from '@/components/Gallery';
 import GoogleMap from '@/components/GoogleMap';
@@ -197,9 +199,11 @@ export default function HomePage() {
                     </div>
                     <div>
                       <span className="block text-xs font-medium text-slate-400">Mobile & WhatsApp</span>
-                      <a href="tel:9777735527" className="text-brand-700 font-bold text-base hover:underline">
-                        9777735527
-                      </a>
+                      <div className="flex items-center gap-2 font-bold text-slate-800 text-sm">
+                        <a href="tel:9777735527" className="text-brand-700 hover:underline">9777735527</a>
+                        <span className="text-slate-400">/</span>
+                        <a href="tel:9668358119" className="text-brand-700 hover:underline">9668358119</a>
+                      </div>
                     </div>
                   </div>
 
@@ -208,8 +212,10 @@ export default function HomePage() {
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="block text-xs font-medium text-slate-400">Location</span>
-                      <span className="text-slate-700 font-semibold">Odisha, India</span>
+                      <span className="block text-xs font-medium text-slate-400">Business Address</span>
+                      <span className="text-slate-700 font-semibold text-xs leading-relaxed block">
+                        At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -299,6 +305,43 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Computer Courses Showcase Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b pb-6">
+          <div>
+            <span className="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-full">
+              Computer Training & Courses
+            </span>
+            <h2 className="text-3xl font-extrabold text-slate-900 mt-2">
+              Learn High-Demand Technical & Office Skills
+            </h2>
+          </div>
+          <Link
+            href="/courses"
+            className="inline-flex items-center gap-2 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 px-5 py-2.5 rounded-xl shadow-md transition-all"
+          >
+            <span>View All Courses & Syllabi</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {coursesData.slice(0, 3).map((course) => (
+            <CourseCard key={course.id} course={course} />
+          ))}
+        </div>
+
+        <div className="text-center pt-2">
+          <Link
+            href="/courses"
+            className="inline-flex items-center gap-2 text-sm font-bold text-brand-700 hover:text-brand-800 hover:underline"
+          >
+            <span>Explore all 8 Courses (PGDCA, Tally, Node.js, DevOps, MS Office, AI Tools...)</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+
       {/* Gallery Preview Section */}
       <section className="bg-slate-100/80 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -338,16 +381,20 @@ export default function HomePage() {
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-brand-600 shrink-0 mt-1" />
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">State & Region</h4>
-                  <p className="text-slate-600 text-xs">Odisha, India</p>
+                  <h4 className="font-bold text-slate-900 text-sm">Center Location</h4>
+                  <p className="text-slate-600 text-xs leading-relaxed">
+                    At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-emerald-600 shrink-0 mt-1" />
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Contact Number</h4>
-                  <p className="text-slate-600 text-xs">9777735527 (Call / WhatsApp)</p>
+                  <h4 className="font-bold text-slate-900 text-sm">Contact Numbers</h4>
+                  <p className="text-slate-600 text-xs">
+                    9777735527, 9668358119 (Call / WhatsApp)
+                  </p>
                 </div>
               </div>
             </div>
