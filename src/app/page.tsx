@@ -17,6 +17,11 @@ import { coursesData } from '@/lib/coursesData';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import Gallery from '@/components/Gallery';
 import GoogleMap from '@/components/GoogleMap';
+import GovtUpdatesTicker from '@/components/GovtUpdatesTicker';
+import PrintCalculator from '@/components/PrintCalculator';
+import ImageResizerTool from '@/components/ImageResizerTool';
+import DocumentWizard from '@/components/DocumentWizard';
+import Testimonials from '@/components/Testimonials';
 
 export const metadata: Metadata = {
   title: 'Cyber Cafe & Online Services in Odisha | Sanjit Rautaray',
@@ -118,9 +123,11 @@ const homeServices: ServiceItem[] = [
 
 export default function HomePage() {
   return (
-    <div className="space-y-16 md:space-y-24 pb-16">
+    <div className="pb-16">
+      <GovtUpdatesTicker />
       
-      {/* Hero Section */}
+      <div className="space-y-16 md:space-y-24">
+        {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-900 via-navy-800 to-navy-900 text-white pt-12 pb-20 md:py-24">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent pointer-events-none"></div>
 
@@ -416,6 +423,26 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Document Checklist Wizard */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <DocumentWizard />
+      </section>
+
+      {/* Print Cost Calculator & Instant Order */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PrintCalculator />
+      </section>
+
+      {/* Govt Application Photo & Signature Resizer */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ImageResizerTool />
+      </section>
+
+      {/* Customer & Student Testimonials */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Testimonials />
+      </section>
+
       {/* Customer Enquiry CTA Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-brand-800 to-navy-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
@@ -437,7 +464,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
+      </div>
     </div>
   );
 }
