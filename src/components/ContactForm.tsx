@@ -40,7 +40,7 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const [submittedData, setSubmittedData] = useState<{ name: string; service: string } | null>(null);
+  const [submittedData, setSubmittedData] = useState<{ name: string; mobile?: string; service: string; message?: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -103,10 +103,24 @@ export default function ContactForm() {
 
       if (response.ok && result.success) {
         setSubmitSuccess(true);
-        setSubmittedData({
+        const submittedDetails = {
           name: formData.fullName.trim(),
+          mobile: formData.mobileNumber.trim(),
           service: formData.service,
-        });
+          message: formData.message.trim(),
+        };
+        setSubmittedData(submittedDetails);
+
+        // Auto-open WhatsApp chat with pre-filled message
+        const waText = `Hello Sanjit, I submitted an enquiry on your website:\n\n*Name:* ${submittedDetails.name}\n*Mobile:* ${submittedDetails.mobile}\n*Service:* ${submittedDetails.service}\n*Message:* ${submittedDetails.message}`;
+        const waUrl = `https://wa.me/919777735527?text=${encodeURIComponent(waText)}`;
+        
+        try {
+          window.open(waUrl, '_blank');
+        } catch (e) {
+          // Popup blocked safeguard
+        }
+
         setFormData({
           fullName: '',
           mobileNumber: '',
@@ -129,7 +143,7 @@ export default function ContactForm() {
   };
 
   if (submitSuccess && submittedData) {
-    const whatsappText = `Hello, I have submitted an enquiry for ${submittedData.service}. My name is ${submittedData.name}.`;
+    const whatsappText = `Hello Sanjit, I submitted an enquiry on your website:\n\n*Name:* ${submittedData.name}\n*Mobile:* ${submittedData.mobile || ''}\n*Service:* ${submittedData.service}\n*Message:* ${submittedData.message || ''}`;
     const whatsappUrl = `https://wa.me/919777735527?text=${encodeURIComponent(whatsappText)}`;
 
     return (
@@ -141,7 +155,7 @@ export default function ContactForm() {
         <div className="space-y-2">
           <h3 className="text-2xl font-bold text-slate-900">Enquiry Submitted!</h3>
           <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
-            Thank you! Your enquiry for <strong className="text-brand-700">{submittedData.service}</strong> has been received successfully. We will get back to you shortly.
+            Thank you! Your enquiry for <strong className="text-brand-700">{submittedData.service}</strong> has been logged. We are also redirecting you to WhatsApp for direct chat.
           </p>
         </div>
 
