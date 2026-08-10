@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function ContactUsPage() {
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'sanjit007muna@gmail.com';
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'sanjit007muna@gmail.com';
 
   return (
     <div className="space-y-12 md:space-y-16 pb-16">

@@ -9,7 +9,7 @@ interface FooterProps {
   adminEmail?: string;
 }
 
-export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'sanjit007muna@gmail.com' }: FooterProps) {
+export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'sanjit007muna@gmail.com' }: FooterProps) {
   const [modalType, setModalType] = useState<'privacy' | 'terms' | null>(null);
 
   return (
