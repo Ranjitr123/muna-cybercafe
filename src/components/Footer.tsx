@@ -142,7 +142,7 @@ export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAI
 
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400">
           <div className="flex items-center gap-2">
-            <span>© {new Date().getFullYear()} Cyber Café / Digital Service Center. Managed by Sanjit Rautaray.</span>
+            <span>© {new Date().getFullYear()} Cyber Café / Digital Service Center. Owner: Sanjit Rautaray | Manager: Bibhudatta Subudhi.</span>
           </div>
 
           <div className="flex items-center space-x-6">

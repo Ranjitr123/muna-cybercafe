@@ -94,6 +94,11 @@ export default function RootLayout({
       name: 'Sanjit Rautaray',
       telephone: '+919777735527',
     },
+    employee: {
+      '@type': 'Person',
+      name: 'Bibhudatta Subudhi',
+      jobTitle: 'Manager',
+    },
     description:
       'Digital Service Center & Cyber Café at Nanapada, Nirakarpur, Khordha, Odisha providing assistance with online form submissions, ticket bookings, printing, scanning, and documentation.',
   };

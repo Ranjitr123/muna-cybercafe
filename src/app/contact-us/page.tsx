@@ -50,8 +50,14 @@ export default function ContactUsPage() {
                     <UserCheck className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="block text-xs font-medium text-slate-400">Owner / Manager</span>
-                    <strong className="text-slate-900 text-lg">Sanjit Rautaray</strong>
+                    <div className="text-xs">
+                      <span className="font-medium text-slate-400">Owner: </span>
+                      <strong className="text-slate-900 font-bold">Sanjit Rautaray</strong>
+                    </div>
+                    <div className="text-xs mt-1">
+                      <span className="font-medium text-slate-400">Manager: </span>
+                      <strong className="text-slate-900 font-bold">Bibhudatta Subudhi</strong>
+                    </div>
                   </div>
                 </div>
 

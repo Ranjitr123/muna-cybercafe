@@ -53,9 +53,10 @@ export default function AboutUsPage() {
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs font-bold uppercase tracking-widest text-brand-200">Founder & Manager</span>
-                <h3 className="text-2xl font-extrabold text-white">Sanjit Rautaray</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <span className="text-xs font-bold uppercase tracking-widest text-brand-200 block">Owner & Leadership</span>
+                <h3 className="text-xl font-extrabold text-white">Sanjit Rautaray <span className="text-sm font-normal text-brand-200">(Owner)</span></h3>
+                <h4 className="text-lg font-bold text-white">Bibhudatta Subudhi <span className="text-sm font-normal text-brand-200">(Manager)</span></h4>
+                <p className="text-xs text-slate-300 leading-relaxed pt-1">
                   "Our goal is to make every online application and digital process simple, accurate, and stress-free for citizens in Odisha."
                 </p>
               </div>
@@ -74,7 +75,7 @@ export default function AboutUsPage() {
             <h2 className="text-3xl font-bold text-slate-900">Personalized Service & Experienced Leadership</h2>
             
             <p className="text-slate-600 text-sm leading-relaxed">
-              Founded and managed by <strong>Sanjit Rautaray</strong>, our Cyber Café / Digital Service Center at Nanapada, Nirakarpur was established to bridge the digital gap in Odisha. Online form submissions for competitive examinations, scholarships, PAN card requests, and government portal services often involve complex requirements and strict deadlines.
+              Founded by <strong>Sanjit Rautaray</strong> and managed by <strong>Bibhudatta Subudhi</strong>, our Cyber Café / Digital Service Center at Nanapada, Nirakarpur was established to bridge the digital gap in Odisha. Online form submissions for competitive examinations, scholarships, PAN card requests, and government portal services often involve complex requirements and strict deadlines.
             </p>
 
             <p className="text-slate-600 text-sm leading-relaxed">
@@ -187,6 +188,11 @@ export default function AboutUsPage() {
               <div className="flex items-center gap-3">
                 <UserCheck className="w-5 h-5 text-brand-600 shrink-0" />
                 <span className="text-slate-700"><strong>Owner:</strong> Sanjit Rautaray</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <UserCheck className="w-5 h-5 text-brand-600 shrink-0" />
+                <span className="text-slate-700"><strong>Manager:</strong> Bibhudatta Subudhi</span>
               </div>
 
               <div className="flex items-center gap-3">

@@ -178,7 +178,7 @@ export default function AIChatbot() {
       return {
         id: Date.now().toString(),
         sender: 'bot',
-        text: '👤 Owner / Manager: Sanjit Rautaray\n📱 Mobile & WhatsApp: +91 9777735527 / +91 9668358119\n📧 Email: sanjit007muna@gmail.com\n\nContact Sanjit directly for quick service!',
+        text: '👤 Owner: Sanjit Rautaray\n👔 Manager: Bibhudatta Subudhi\n📱 Mobile & WhatsApp: +91 9777735527 / +91 9668358119\n📧 Email: sanjit007muna@gmail.com\n\nContact us directly for quick service!',
         timestamp,
         actions: [
           { label: 'Call +91 9777735527', type: 'phone', value: '9777735527' },

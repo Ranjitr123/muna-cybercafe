@@ -44,6 +44,9 @@ export default function Header() {
             <span className="hidden lg:flex items-center gap-1.5">
               <span className="text-slate-400">Owner:</span>
               <strong className="text-white font-medium">Sanjit Rautaray</strong>
+              <span className="text-slate-500 mx-1">|</span>
+              <span className="text-slate-400">Manager:</span>
+              <strong className="text-white font-medium">Bibhudatta Subudhi</strong>
             </span>
           </div>
           <div className="flex items-center gap-3 text-[11px] sm:text-xs">

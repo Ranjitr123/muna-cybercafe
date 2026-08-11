@@ -1,12 +1,13 @@
 # Cyber Café & Digital Service Center Website – Odisha
 
-A modern, responsive, high-performance website built with **Next.js (App Router)**, **TypeScript**, and **Tailwind CSS** for a Cyber Café / Digital Service Center located in **Odisha, India**, owned and managed by **Sanjit Rautaray**.
+A modern, responsive, high-performance website built with **Next.js (App Router)**, **TypeScript**, and **Tailwind CSS** for a Cyber Café / Digital Service Center located in **Odisha, India**, owned by **Sanjit Rautaray** and managed by **Bibhudatta Subudhi**.
 
 ---
 
 ## 🌟 Business Overview
 
-- **Owner / Manager:** Sanjit Rautaray
+- **Owner:** Sanjit Rautaray
+- **Manager:** Bibhudatta Subudhi
 - **Mobile Number:** `+91 9777735527`
 - **WhatsApp:** `https://wa.me/919777735527`
 - **Location:** Odisha, India

@@ -148,7 +148,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-                Welcome to <strong>Cyber Café & Digital Service Center</strong>, managed by <strong>Sanjit Rautaray</strong>. We provide expert online application assistance, PAN card help, ticket bookings, printing, scanning, and digital documentation in Odisha.
+                Welcome to <strong>Cyber Café & Digital Service Center</strong>, owned by <strong>Sanjit Rautaray</strong> & managed by <strong>Bibhudatta Subudhi</strong>. We provide expert online application assistance, PAN card help, ticket bookings, printing, scanning, and digital documentation in Odisha.
               </p>
 
               <div className="bg-white/10 backdrop-blur-md border border-white/10 p-3.5 rounded-xl text-xs text-slate-200 flex items-start gap-2.5 max-w-xl mx-auto lg:mx-0">
@@ -195,8 +195,14 @@ export default function HomePage() {
                       <UserCheck className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="block text-xs font-medium text-slate-400">Owner & Manager</span>
-                      <strong className="text-slate-800 text-base">Sanjit Rautaray</strong>
+                      <div className="text-xs">
+                        <span className="font-medium text-slate-400">Owner: </span>
+                        <strong className="text-slate-800 font-semibold text-sm">Sanjit Rautaray</strong>
+                      </div>
+                      <div className="text-xs mt-0.5">
+                        <span className="font-medium text-slate-400">Manager: </span>
+                        <strong className="text-slate-800 font-semibold text-sm">Bibhudatta Subudhi</strong>
+                      </div>
                     </div>
                   </div>
 
@@ -281,7 +287,7 @@ export default function HomePage() {
             </div>
             <h3 className="text-lg font-bold text-slate-900">Friendly Local Guidance</h3>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Direct consultation with owner <strong>Sanjit Rautaray</strong>. Get step-by-step guidance on required documents.
+              Direct consultation with owner <strong>Sanjit Rautaray</strong> and manager <strong>Bibhudatta Subudhi</strong>. Get step-by-step guidance on required documents.
             </p>
           </div>
         </div>
@@ -381,7 +387,7 @@ export default function HomePage() {
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900">Convenient Location in Odisha</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Visit our Cyber Café for face-to-face assistance with your online forms, document printing, or internet needs. Managed personally by <strong>Sanjit Rautaray</strong>.
+              Visit our Cyber Café for face-to-face assistance with your online forms, document printing, or internet needs. Managed by <strong>Bibhudatta Subudhi</strong> (Owner: <strong>Sanjit Rautaray</strong>).
             </p>
 
             <div className="space-y-4 pt-2">
