@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://cybercafe-odisha.netlify.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://munatechworld.netlify.app'),
   title: {
     default: 'Cyber Cafe & Online Services in Odisha | Sanjit Rautaray',
     template: '%s | Cyber Cafe Odisha',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://cybercafe-odisha.netlify.app',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://munatechworld.netlify.app',
     title: 'Cyber Cafe & Online Services in Odisha | Sanjit Rautaray',
     description:
       'Fast, reliable digital service center at Nanapada, Nirakarpur, Khordha for online form filling, ticket booking, printing, scanning, and documentation support.',
@@ -65,9 +65,9 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: 'Cyber Café & Digital Service Center',
-    image: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://cybercafe-odisha.netlify.app'}/images/gallery/workstations.png`,
-    '@id': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://cybercafe-odisha.netlify.app'}#business`,
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://cybercafe-odisha.netlify.app',
+    image: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://munatechworld.netlify.app'}/images/gallery/workstations.png`,
+    '@id': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://munatechworld.netlify.app'}#business`,
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://munatechworld.netlify.app',
     telephone: ['+919777735527', '+919668358119'],
     priceRange: '₹',
     address: {
