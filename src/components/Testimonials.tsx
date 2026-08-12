@@ -53,7 +53,7 @@ export default function Testimonials() {
         </div>
 
         <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-          Trusted by 5,000+ Customers in Odisha
+          Trusted by 5,000+ Customers in Nirakarpur, Khordha, Odisha
         </h2>
 
         <div className="flex items-center justify-center gap-2 text-sm font-bold text-slate-700">

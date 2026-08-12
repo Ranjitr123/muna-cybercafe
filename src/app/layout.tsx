@@ -15,11 +15,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://munatechworld.netlify.app'),
   title: {
-    default: 'Cyber Cafe & Online Services in Odisha | Sanjit Rautaray',
-    template: '%s | Cyber Cafe Odisha',
+    default: 'Cyber Cafe & Online Services in Nirakarpur, Khordha, Odisha | Sanjit Rautaray',
+    template: '%s | Cyber Cafe Nirakarpur, Khordha, Odisha',
   },
   description:
-    'Cyber Café and Digital Service Center at Nanapada, Nirakarpur, Khordha, Odisha owned by Sanjit Rautaray. Contact: 9777735527, 9668358119. Providing online form filling assistance, PAN card help, ticket booking, exam forms, scholarships, printing, scanning, and digital documentation.',
+    'Cyber Café and Digital Service Center at Nanapada, Nirakarpur, Khordha, Odisha owned by Sanjit Rautaray. Contact: 9777735527, 9668358119. Providing online form filling assistance, PAN card help, ticket booking, exam forms, scholarships, printing, scanning, and digital documentation in Nirakarpur, Khordha, Odisha.',
   keywords: [
     'Cyber Cafe Odisha',
     'Digital Service Center Odisha',
@@ -40,14 +40,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://munatechworld.netlify.app',
-    title: 'Cyber Cafe & Online Services in Odisha | Sanjit Rautaray',
+    title: 'Cyber Cafe & Online Services in Nirakarpur, Khordha, Odisha | Sanjit Rautaray',
     description:
-      'Fast, reliable digital service center at Nanapada, Nirakarpur, Khordha for online form filling, ticket booking, printing, scanning, and documentation support.',
-    siteName: 'Cyber Café Odisha',
+      'Fast, reliable digital service center at Nanapada, Nirakarpur, Khordha, Odisha for online form filling, ticket booking, printing, scanning, and documentation support.',
+    siteName: 'Cyber Café Nirakarpur, Khordha, Odisha',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cyber Cafe & Online Services in Odisha | Sanjit Rautaray',
+    title: 'Cyber Cafe & Online Services in Nirakarpur, Khordha, Odisha | Sanjit Rautaray',
     description: 'Trusted Cyber Café and Digital Service Center in Nanapada, Nirakarpur, Khordha, Odisha. Contact: 9777735527, 9668358119.',
   },
   robots: {

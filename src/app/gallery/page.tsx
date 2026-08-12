@@ -5,9 +5,9 @@ import Gallery from '@/components/Gallery';
 import WhatsAppButton from '@/components/WhatsAppButton';
 
 export const metadata: Metadata = {
-  title: 'Gallery | Cyber Cafe Odisha',
+  title: 'Gallery | Cyber Cafe Nirakarpur, Khordha, Odisha',
   description:
-    'Explore the photo gallery of Cyber Café / Digital Service Center in Odisha. View computer workstations, printing equipment, and digital service infrastructure.',
+    'Explore the photo gallery of Cyber Café / Digital Service Center in Nirakarpur, Khordha, Odisha. View computer workstations, printing equipment, and digital service infrastructure.',
 };
 
 export default function GalleryPage() {
@@ -25,7 +25,7 @@ export default function GalleryPage() {
           </h1>
 
           <p className="text-slate-300 text-base max-w-xl mx-auto">
-            Take a look at our clean workstations, color printing facilities, scanning setups, and customer service environment in Odisha.
+            Take a look at our clean workstations, color printing facilities, scanning setups, and customer service environment in Nirakarpur, Khordha, Odisha.
           </p>
         </div>
       </section>
@@ -39,7 +39,7 @@ export default function GalleryPage() {
           <div className="space-y-2 text-center md:text-left">
             <h3 className="text-xl font-bold text-slate-900">Need Online Application Assistance Today?</h3>
             <p className="text-slate-600 text-sm">
-              Visit our Cyber Café in Odisha or contact Sanjit Rautaray on WhatsApp for quick advice.
+              Visit our Cyber Café in Nirakarpur, Khordha, Odisha or contact Sanjit Rautaray on WhatsApp for quick advice.
             </p>
           </div>
 

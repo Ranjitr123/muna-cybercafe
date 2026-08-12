@@ -21,7 +21,7 @@ import GoogleMap from '@/components/GoogleMap';
 export const metadata: Metadata = {
   title: 'About Us | Sanjit Rautaray Cyber Cafe',
   description:
-    'Learn about Sanjit Rautaray and Cyber Café / Digital Service Center in Odisha. Dedicated to providing trustworthy online form filling, printing, and digital support.',
+    'Learn about Sanjit Rautaray and Cyber Café / Digital Service Center in Nirakarpur, Khordha, Odisha. Dedicated to providing trustworthy online form filling, printing, and digital support.',
 };
 
 export default function AboutUsPage() {
@@ -35,11 +35,11 @@ export default function AboutUsPage() {
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight">
-            About Cyber Café <span className="text-brand-400">Odisha</span>
+            About Cyber Café <span className="text-brand-400">Nirakarpur, Khordha, Odisha</span>
           </h1>
 
           <p className="text-slate-300 text-base max-w-2xl mx-auto leading-relaxed">
-            Empowering students, job applicants, and citizens across Odisha with reliable online application assistance, digital documentation, and cyber services.
+            Empowering students, job applicants, and citizens across Nirakarpur, Khordha, Odisha with reliable online application assistance, digital documentation, and cyber services.
           </p>
         </div>
       </section>
@@ -57,7 +57,7 @@ export default function AboutUsPage() {
                 <h3 className="text-xl font-extrabold text-white">Sanjit Rautaray <span className="text-sm font-normal text-brand-200">(Owner)</span></h3>
                 <h4 className="text-lg font-bold text-white">Bibhudatta Subudhi <span className="text-sm font-normal text-brand-200">(Manager)</span></h4>
                 <p className="text-xs text-slate-300 leading-relaxed pt-1">
-                  "Our goal is to make every online application and digital process simple, accurate, and stress-free for citizens in Odisha."
+                  "Our goal is to make every online application and digital process simple, accurate, and stress-free for citizens in Nirakarpur, Khordha, Odisha."
                 </p>
               </div>
 
@@ -75,7 +75,7 @@ export default function AboutUsPage() {
             <h2 className="text-3xl font-bold text-slate-900">Personalized Service & Experienced Leadership</h2>
             
             <p className="text-slate-600 text-sm leading-relaxed">
-              Founded by <strong>Sanjit Rautaray</strong> and managed by <strong>Bibhudatta Subudhi</strong>, our Cyber Café / Digital Service Center at Nanapada, Nirakarpur was established to bridge the digital gap in Odisha. Online form submissions for competitive examinations, scholarships, PAN card requests, and government portal services often involve complex requirements and strict deadlines.
+              Founded by <strong>Sanjit Rautaray</strong> and managed by <strong>Bibhudatta Subudhi</strong>, our Cyber Café / Digital Service Center at Nanapada, Nirakarpur was established to bridge the digital gap in Nirakarpur, Khordha, Odisha. Online form submissions for competitive examinations, scholarships, PAN card requests, and government portal services often involve complex requirements and strict deadlines.
             </p>
 
             <p className="text-slate-600 text-sm leading-relaxed">
@@ -111,7 +111,7 @@ export default function AboutUsPage() {
             </div>
             <h3 className="text-xl font-bold text-slate-900">Our Mission</h3>
             <p className="text-slate-600 text-sm leading-relaxed">
-              To deliver accurate, hassle-free online form filling assistance, ticket bookings, and digital document processing to every customer in Odisha with the highest standards of integrity, data security, and speed.
+              To deliver accurate, hassle-free online form filling assistance, ticket bookings, and digital document processing to every customer in Nirakarpur, Khordha, Odisha with the highest standards of integrity, data security, and speed.
             </p>
           </div>
 
@@ -121,7 +121,7 @@ export default function AboutUsPage() {
             </div>
             <h3 className="text-xl font-bold text-slate-900">Our Vision</h3>
             <p className="text-slate-600 text-sm leading-relaxed">
-              To be recognized as the most trusted local digital assistance center in Odisha, known for friendly customer service, error-free documentation, and modern cyber infrastructure.
+              To be recognized as the most trusted local digital assistance center in Nirakarpur, Khordha, Odisha, known for friendly customer service, error-free documentation, and modern cyber infrastructure.
             </p>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function AboutUsPage() {
             <span className="text-xs font-bold text-brand-600 uppercase tracking-widest bg-white px-3 py-1 rounded-full shadow-sm">
               Our Core Principles
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900">Why Customers in Odisha Trust Us</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900">Why Customers in Nirakarpur, Khordha, Odisha Trust Us</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -157,7 +157,7 @@ export default function AboutUsPage() {
               <HeartHandshake className="w-8 h-8 text-emerald-600" />
               <h4 className="font-bold text-slate-900 text-base">Locally Friendly</h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Warm, polite communication tailored to the needs of rural and urban citizens across Odisha.
+                Warm, polite communication tailored to the needs of rural and urban citizens across Nirakarpur, Khordha, Odisha.
               </p>
             </div>
 

@@ -6,9 +6,9 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import GoogleMap from '@/components/GoogleMap';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Cyber Cafe & Online Services',
+  title: 'Contact Us | Cyber Cafe Nirakarpur, Khordha, Odisha',
   description:
-    'Contact Sanjit Rautaray at Cyber Café / Digital Service Center. Address: At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019. Mob: 9777735527, 9668358119.',
+    'Contact Sanjit Rautaray at Cyber Café / Digital Service Center in Nirakarpur, Khordha, Odisha. Address: At - Nanapada, PO/PS - Nirakarpur, Dist - Khordha, State - Odisha, Pin - 752019. Mob: 9777735527, 9668358119.',
 };
 
 export default function ContactUsPage() {
@@ -24,7 +24,7 @@ export default function ContactUsPage() {
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight">
-            Contact <span className="text-brand-400">Cyber Café Odisha</span>
+            Contact <span className="text-brand-400">Cyber Café Nirakarpur, Khordha, Odisha</span>
           </h1>
 
           <p className="text-slate-300 text-base max-w-xl mx-auto">

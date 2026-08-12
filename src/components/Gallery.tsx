@@ -224,7 +224,7 @@ export default function Gallery({ limit }: { limit?: number }) {
             {/* Caption & Info Bar */}
             <div className="p-6 bg-white space-y-2 border-t border-slate-100">
               <div className="flex justify-between items-center text-xs text-slate-400">
-                <span>Cyber Café & Digital Service Center • Odisha</span>
+                <span>Cyber Café & Digital Service Center • Nirakarpur, Khordha, Odisha</span>
                 <span>Press ESC or click outside to close</span>
               </div>
               <h3 className="text-xl font-bold text-slate-900">{selectedImage.title}</h3>

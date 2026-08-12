@@ -100,7 +100,7 @@ export async function sendEnquiryEmails(payload: EmailPayload): Promise<{ adminS
   if (payload.email) {
     const customerHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #ffffff;">
-        <h2 style="color: #1e40af; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Enquiry Received - Cyber Café Odisha</h2>
+        <h2 style="color: #1e40af; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Enquiry Received - Cyber Café Nirakarpur, Khordha, Odisha</h2>
         <p style="font-size: 15px; color: #334155;">Hello <strong>${payload.name}</strong>,</p>
         <p style="font-size: 14px; color: #475569; line-height: 1.6;">
           Thank you for contacting us! We have received your enquiry for <strong>${payload.service}</strong> and will get back to you shortly.
@@ -131,9 +131,9 @@ export async function sendEnquiryEmails(payload: EmailPayload): Promise<{ adminS
 
     try {
       await transporter.sendMail({
-        from: `"Cyber Café Odisha" <${fromEmail}>`,
+        from: `"Cyber Café Nirakarpur, Khordha, Odisha" <${fromEmail}>`,
         to: payload.email,
-        subject: `Thank you for your enquiry - Cyber Café Odisha`,
+        subject: `Thank you for your enquiry - Cyber Café Nirakarpur, Khordha, Odisha`,
         html: customerHtml,
       });
       customerSent = true;

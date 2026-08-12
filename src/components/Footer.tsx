@@ -23,11 +23,11 @@ export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAI
                 <Monitor className="w-5 h-5" />
               </div>
               <span className="text-xl font-bold text-white tracking-tight">
-                Cyber Café <span className="text-brand-400">Odisha</span>
+                Cyber Café <span className="text-brand-400">Nirakarpur, Khordha, Odisha</span>
               </span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Your trusted Digital Service Center & Cyber Café in Odisha. Offering fast, secure online application assistance, ticket bookings, printing, scanning, and documentation support.
+              Your trusted Digital Service Center & Cyber Café in Nirakarpur, Khordha, Odisha. Offering fast, secure online application assistance, ticket bookings, printing, scanning, and documentation support.
             </p>
             <div className="pt-2">
               <span className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-800 text-brand-300 border border-slate-700">
@@ -180,7 +180,7 @@ export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAI
               {modalType === 'privacy' ? (
                 <>
                   <p>
-                    <strong>Cyber Café Odisha</strong> values customer privacy. We collect customer names, phone numbers, and email addresses solely for providing online form filling and digital application assistance.
+                    <strong>Cyber Café Nirakarpur, Khordha, Odisha</strong> values customer privacy. We collect customer names, phone numbers, and email addresses solely for providing online form filling and digital application assistance.
                   </p>
                   <p>
                     We do not sell, leak, or share private credentials with unauthorized third parties. All submissions are stored securely for record-keeping and service status communication.

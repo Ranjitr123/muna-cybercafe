@@ -53,7 +53,7 @@ export default function AIChatbot() {
   const initialBotMessage: Message = {
     id: '1',
     sender: 'bot',
-    text: "Namaste! 🙏 Welcome to Cyber Café & Digital Service Center, Odisha. I am Sanjit's AI Assistant. How can I help you today?",
+    text: "Namaste! 🙏 Welcome to Cyber Café & Digital Service Center, Nirakarpur, Khordha, Odisha. I am Sanjit's AI Assistant. How can I help you today?",
     timestamp: getCurrentTime(),
     actions: [
       { label: 'Chat on WhatsApp', type: 'whatsapp', value: '9777735527' },

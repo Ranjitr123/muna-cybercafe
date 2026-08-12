@@ -24,9 +24,9 @@ import DocumentWizard from '@/components/DocumentWizard';
 import Testimonials from '@/components/Testimonials';
 
 export const metadata: Metadata = {
-  title: 'Cyber Cafe & Online Services in Odisha | Sanjit Rautaray',
+  title: 'Cyber Cafe & Online Services in Nirakarpur, Khordha, Odisha | Sanjit Rautaray',
   description:
-    'Modern Cyber Café & Digital Service Center in Odisha owned by Sanjit Rautaray. Fast online form filling assistance, ticket bookings, printing, scanning, and documentation.',
+    'Modern Cyber Café & Digital Service Center in Nirakarpur, Khordha, Odisha owned by Sanjit Rautaray. Fast online form filling assistance, ticket bookings, printing, scanning, and documentation.',
 };
 
 const homeServices: ServiceItem[] = [
@@ -137,7 +137,7 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-brand-800/80 border border-brand-500/30 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold text-brand-200">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>Your Trusted Digital Service Center in Odisha</span>
+                <span>Your Trusted Digital Service Center in Nirakarpur, Khordha, Odisha</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
@@ -148,7 +148,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-                Welcome to <strong>Cyber Café & Digital Service Center</strong>, owned by <strong>Sanjit Rautaray</strong> & managed by <strong>Bibhudatta Subudhi</strong>. We provide expert online application assistance, PAN card help, ticket bookings, printing, scanning, and digital documentation in Odisha.
+                Welcome to <strong>Cyber Café & Digital Service Center</strong>, owned by <strong>Sanjit Rautaray</strong> & managed by <strong>Bibhudatta Subudhi</strong>. We provide expert online application assistance, PAN card help, ticket bookings, printing, scanning, and digital documentation in Nirakarpur, Khordha, Odisha.
               </p>
 
               <div className="bg-white/10 backdrop-blur-md border border-white/10 p-3.5 rounded-xl text-xs text-slate-200 flex items-start gap-2.5 max-w-xl mx-auto lg:mx-0">
@@ -385,7 +385,7 @@ export default function HomePage() {
             <span className="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-full">
               Visit Our Center
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900">Convenient Location in Odisha</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900">Convenient Location in Nirakarpur, Khordha, Odisha</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
               Visit our Cyber Café for face-to-face assistance with your online forms, document printing, or internet needs. Managed by <strong>Bibhudatta Subudhi</strong> (Owner: <strong>Sanjit Rautaray</strong>).
             </p>

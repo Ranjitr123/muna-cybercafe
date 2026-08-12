@@ -73,7 +73,7 @@ export default function Header() {
                 Cyber Café <span className="text-brand-600">&</span> Digital Hub
               </span>
               <span className="block text-xs font-medium text-slate-500 tracking-wider">
-                Online Services • Odisha
+                Online Services • Nirakarpur, Khordha, Odisha
               </span>
             </div>
           </Link>

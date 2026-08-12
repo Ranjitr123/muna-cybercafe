@@ -9,7 +9,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 export const metadata: Metadata = {
   title: 'Computer Courses & Training | PGDCA, Web Dev, Tally, MS Office, AI Tools',
   description:
-    'Join Computer & Software Training Courses in Nanapada, Nirakarpur, Khordha, Odisha. PGDCA, Full-Stack Web Development (React/Angular), Backend Node.js, DevOps, Tally Prime with GST, MS Office, Photoshop, PageMaker, and AI Productivity Tools.',
+    'Join Computer & Software Training Courses at Cyber Café in Nanapada, Nirakarpur, Khordha, Odisha. PGDCA, Full-Stack Web Development (React/Angular), Backend Node.js, DevOps, Tally Prime with GST, MS Office, Photoshop, PageMaker, and AI Productivity Tools in Nirakarpur, Khordha, Odisha.',
   keywords: [
     'Computer Courses Nirakarpur',
     'PGDCA Admission Khordha',
