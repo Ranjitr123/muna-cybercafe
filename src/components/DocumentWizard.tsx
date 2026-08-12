@@ -88,32 +88,32 @@ export default function DocumentWizard() {
   };
 
   return (
-    <section className="py-12 bg-gradient-to-br from-brand-950 via-navy-900 to-slate-900 text-white rounded-3xl p-6 sm:p-10 border border-brand-500/20 shadow-2xl space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-navy-700 pb-6">
+    <section className="py-12 bg-slate-900 bg-gradient-to-br from-slate-950 via-navy-900 to-brand-900 text-white rounded-3xl p-6 sm:p-10 border border-brand-500/30 shadow-2xl space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-700/80 pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 bg-brand-500/20 text-brand-300 px-3.5 py-1.5 rounded-full text-xs font-bold border border-brand-400/30 mb-2">
+          <div className="inline-flex items-center gap-2 bg-brand-500/25 text-brand-300 px-4 py-1.5 rounded-full text-xs font-extrabold border border-brand-400/40 mb-3 shadow-sm">
             <FileCheck className="w-4 h-4 text-brand-400" />
-            <span>Document Checklist Guide</span>
+            <span className="tracking-wide uppercase text-[11px]">Document Checklist Guide</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight drop-shadow-sm">
             Required Documents Wizard
           </h2>
-          <p className="text-slate-300 text-sm mt-1">
+          <p className="text-slate-200 text-sm sm:text-base mt-2 font-medium">
             Check exactly what documents to bring before visiting Cyber Café Nanapada, Nirakarpur.
           </p>
         </div>
       </div>
 
       {/* Selector Tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {CHECKLISTS.map((item) => (
           <button
             key={item.id}
             onClick={() => setSelectedService(item)}
             className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all border ${
               selectedService.id === item.id
-                ? 'bg-brand-600 text-white border-brand-500 shadow-md scale-102'
-                : 'bg-navy-800/80 text-slate-300 hover:bg-navy-700 border-navy-700'
+                ? 'bg-brand-600 text-white border-brand-400 shadow-lg scale-102'
+                : 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white border-slate-700'
             }`}
           >
             {item.name}
@@ -122,37 +122,37 @@ export default function DocumentWizard() {
       </div>
 
       {/* Selected Checklist Card */}
-      <div className="bg-navy-900/90 border border-navy-700 rounded-3xl p-6 sm:p-8 space-y-6 shadow-inner">
-        <div className="flex justify-between items-center border-b border-navy-800 pb-4">
+      <div className="bg-slate-950/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-inner">
+        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
           <h3 className="text-lg sm:text-xl font-black text-brand-300 flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             {selectedService.name}
           </h3>
-          <span className="bg-brand-500/20 text-brand-200 border border-brand-400/30 text-[11px] font-bold px-3 py-1 rounded-full uppercase">
+          <span className="bg-brand-500/25 text-brand-200 border border-brand-400/40 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
             {selectedService.category}
           </span>
         </div>
 
         <div className="space-y-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
             What Documents to Bring:
           </h4>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-200">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-100">
             {selectedService.requiredDocuments.map((doc, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 bg-navy-950/60 p-3 rounded-xl border border-navy-800">
-                <span className="w-5 h-5 rounded-full bg-brand-500/30 text-brand-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <li key={idx} className="flex items-start gap-3 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 shadow-sm">
+                <span className="w-5 h-5 rounded-full bg-brand-600/40 text-brand-200 font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5 border border-brand-400/30">
                   {idx + 1}
                 </span>
-                <span className="font-medium text-xs leading-relaxed">{doc}</span>
+                <span className="font-semibold text-xs leading-relaxed text-slate-100">{doc}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="bg-brand-950/80 border border-brand-500/30 p-4 rounded-2xl text-xs text-brand-200 flex items-start gap-3">
+        <div className="bg-brand-950/90 border border-brand-500/30 p-4 rounded-2xl text-xs sm:text-sm text-brand-200 flex items-start gap-3 shadow-sm">
           <HelpCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div>
-            <strong>Important Tip:</strong> {selectedService.notes}
+            <strong className="text-amber-300">Important Tip:</strong> {selectedService.notes}
           </div>
         </div>
 
