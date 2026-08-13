@@ -355,9 +355,15 @@ export async function addCustomerServiceRequestToUser(userEmailOrMobile: string,
 
     const userDoc = docs.find((doc: any) => {
       const f = doc.fields || {};
-      const uEmail = (f.email?.stringValue || '').toLowerCase();
+      const uEmail = (f.email?.stringValue || '').trim().toLowerCase();
       const uMobile = (f.mobile?.stringValue || '').replace(/\D/g, '');
-      return (uEmail && uEmail === cleanInput) || (cleanDigits && uMobile === cleanDigits);
+      if (cleanInput.includes('@') && uEmail) {
+        return uEmail === cleanInput;
+      }
+      if (cleanDigits && uMobile) {
+        return uMobile === cleanDigits;
+      }
+      return false;
     });
 
     if (!userDoc) {

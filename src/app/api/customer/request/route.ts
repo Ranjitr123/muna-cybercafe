@@ -18,9 +18,15 @@ export async function GET(request: NextRequest) {
     const cleanMobile = mobile.replace(/\D/g, '');
 
     const foundUser = users.find((u: any) => {
-      const uEmail = (u.email || '').toLowerCase();
+      const uEmail = (u.email || '').trim().toLowerCase();
       const uMobile = (u.mobile || '').replace(/\D/g, '');
-      return (cleanEmail && uEmail === cleanEmail) || (cleanMobile && uMobile.includes(cleanMobile));
+      if (cleanEmail && uEmail) {
+        return uEmail === cleanEmail;
+      }
+      if (cleanMobile && uMobile) {
+        return uMobile === cleanMobile;
+      }
+      return false;
     });
 
     if (foundUser) {

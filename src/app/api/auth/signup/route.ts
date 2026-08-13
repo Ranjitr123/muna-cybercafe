@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { saveUserToFirebase } from '@/lib/firebaseService';
+import { saveUserToFirebase, getUsersFromFirebase } from '@/lib/firebaseService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +12,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'All registration fields are required' }, { status: 400 });
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanMobile = mobile.replace(/\D/g, '');
+
+    // Check for existing account with same email or mobile number
+    const existingUsers = await getUsersFromFirebase();
+    const isDuplicate = existingUsers.some((u: any) => {
+      const uEmail = (u.email || '').trim().toLowerCase();
+      const uMobile = (u.mobile || '').replace(/\D/g, '');
+      return (cleanEmail && uEmail === cleanEmail) || (cleanMobile && uMobile === cleanMobile);
+    });
+
+    if (isDuplicate) {
+      return NextResponse.json(
+        { success: false, message: 'Account with this Email Address or Mobile Number already exists. Please log in.' },
+        { status: 400 }
+      );
+    }
+
     const newUser = {
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
       mobile: mobile.trim(),
       password,
       role: 'customer',
