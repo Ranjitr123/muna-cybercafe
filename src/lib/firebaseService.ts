@@ -102,23 +102,49 @@ export async function saveNoticeToFirebase(notice: {
 }
 
 /**
- * Fetches latest notices from Firebase Cloud Firestore.
+ * Fetches all customer lead submissions dynamically from Firebase Cloud Firestore.
  */
-export async function getNoticesFromFirebase(maxCount = 10) {
-  try {
-    if (!isFirebaseConfigured()) {
-      return [];
+export async function getEnquiriesFromFirebase(): Promise<any[]> {
+  const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
+  if (projectId) {
+    try {
+      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/enquiries`;
+      const res = await fetch(url, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        const docs = json.documents || [];
+        return docs.map((doc: any) => {
+          const f = doc.fields || {};
+          const id = (doc.name || '').split('/').pop() || `L-${Date.now()}`;
+          return {
+            id,
+            name: f.name?.stringValue || 'Customer',
+            mobile: f.mobile?.stringValue || '',
+            email: f.email?.stringValue || '',
+            service: f.service?.stringValue || 'Cyber Cafe Service',
+            message: f.message?.stringValue || '',
+            source: f.source?.stringValue || 'Website Contact Form',
+            status: f.status?.stringValue || 'New',
+            createdAt: f.createdAt?.stringValue ? new Date(f.createdAt.stringValue).toLocaleDateString() : new Date().toLocaleDateString(),
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('[Firebase REST API] Fetch enquiries error:', e);
     }
-
-    const q = query(collection(db, 'notices'), orderBy('createdAt', 'desc'), limit(maxCount));
-    const querySnapshot = await getDocs(q);
-
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  } catch (error: any) {
-    console.error('[Firebase Error] Failed to fetch notices:', error);
-    return [];
   }
+
+  try {
+    if (isFirebaseConfigured()) {
+      const querySnapshot = await getDocs(collection(db, 'enquiries'));
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    }
+  } catch (err) {
+    console.error('[Firebase SDK] Fetch enquiries error:', err);
+  }
+
+  return [];
 }

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
-import { ShieldCheck, Phone, Mail, MessageCircle, RefreshCw, LogOut, CheckCircle2, Clock, Filter, User, Search } from 'lucide-react';
+import { ShieldCheck, Phone, Mail, MessageCircle, RefreshCw, LogOut, CheckCircle2, Clock, Filter, User, Search, Database } from 'lucide-react';
 
 interface Lead {
   id: string;
@@ -21,49 +21,78 @@ export default function AdminPortalPage() {
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
 
-  const [leads, setLeads] = useState<Lead[]>([
-    {
-      id: 'L-1001',
-      name: 'Rajesh Kumar Mohanty',
-      mobile: '9777735527',
-      email: 'rajesh@example.com',
-      service: 'PAN Card Application',
-      message: 'Need urgent new PAN card processing with Aadhaar link.',
-      source: 'Website Contact Form',
-      status: 'In Progress',
-      createdAt: new Date().toLocaleDateString(),
-    },
-    {
-      id: 'L-1002',
-      name: 'Priyanka Das',
-      mobile: '9668358119',
-      email: 'priyanka@gmail.com',
-      service: 'Scholarship Application',
-      message: 'Assistance for Medhabruti scholarship portal submission.',
-      source: 'Website Contact Form',
-      status: 'New',
-      createdAt: new Date().toLocaleDateString(),
-    },
-    {
-      id: 'L-1003',
-      name: 'Soumya Ranjan Swain',
-      mobile: '9861000000',
-      email: 'soumya@yahoo.com',
-      service: 'Passport Assistance',
-      message: 'Fresh passport application appointment booking.',
-      source: 'Website Contact Form',
-      status: 'Completed',
-      createdAt: new Date().toLocaleDateString(),
-    },
-  ]);
-
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLiveFirebase, setIsLiveFirebase] = useState(false);
+
+  const fetchLiveLeads = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch('/api/admin/leads', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setLeads(json.data);
+          setIsLiveFirebase(true);
+        } else {
+          setFallbackLeads();
+        }
+      } else {
+        setFallbackLeads();
+      }
+    } catch (err) {
+      console.warn('Failed to fetch live leads:', err);
+      setFallbackLeads();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const setFallbackLeads = () => {
+    setLeads([
+      {
+        id: 'L-1001',
+        name: 'Rajesh Kumar Mohanty',
+        mobile: '9777735527',
+        email: 'rajesh@example.com',
+        service: 'PAN Card Application',
+        message: 'Need urgent new PAN card processing with Aadhaar link.',
+        source: 'Website Contact Form',
+        status: 'In Progress',
+        createdAt: new Date().toLocaleDateString(),
+      },
+      {
+        id: 'L-1002',
+        name: 'Priyanka Das',
+        mobile: '9668358119',
+        email: 'priyanka@gmail.com',
+        service: 'Scholarship Application',
+        message: 'Assistance for Medhabruti scholarship portal submission.',
+        source: 'Website Contact Form',
+        status: 'New',
+        createdAt: new Date().toLocaleDateString(),
+      },
+      {
+        id: 'L-1003',
+        name: 'Soumya Ranjan Swain',
+        mobile: '9861000000',
+        email: 'soumya@yahoo.com',
+        service: 'Passport Assistance',
+        message: 'Fresh passport application appointment booking.',
+        source: 'Website Contact Form',
+        status: 'Completed',
+        createdAt: new Date().toLocaleDateString(),
+      },
+    ]);
+  };
 
   useEffect(() => {
     if (!isLoading && (!user || user.role !== 'admin')) {
       router.push('/login');
+    } else if (user && user.role === 'admin') {
+      fetchLiveLeads();
     }
   }, [user, isLoading, router]);
 
@@ -102,8 +131,9 @@ export default function AdminPortalPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Admin Enquiry Portal</h1>
-                <span className="bg-emerald-500 text-white text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full">
-                  Live Firebase Connected
+                <span className={`text-white text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${isLiveFirebase ? 'bg-emerald-500' : 'bg-amber-500'}`}>
+                  <Database className="w-3 h-3" />
+                  <span>{isLiveFirebase ? 'Live Firebase Connected' : 'Local Dynamic Mode'}</span>
                 </span>
               </div>
               <p className="text-xs text-slate-300">
@@ -114,11 +144,9 @@ export default function AdminPortalPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => {
-                setIsRefreshing(true);
-                setTimeout(() => setIsRefreshing(false), 600);
-              }}
-              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors"
+              onClick={fetchLiveLeads}
+              disabled={isRefreshing}
+              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors disabled:opacity-75"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span>Refresh Leads</span>
@@ -144,21 +172,21 @@ export default function AdminPortalPage() {
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
             <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider block">New Enquiries</span>
             <span className="text-2xl font-extrabold text-blue-700 mt-1 block">
-              {leads.filter((l) => l.status === 'New').length}
+              {leads.filter((l) => l.status.toLowerCase() === 'new').length}
             </span>
           </div>
 
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
             <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider block">In Progress</span>
             <span className="text-2xl font-extrabold text-amber-700 mt-1 block">
-              {leads.filter((l) => l.status === 'In Progress').length}
+              {leads.filter((l) => l.status.toLowerCase() === 'in progress').length}
             </span>
           </div>
 
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
             <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider block">Completed</span>
             <span className="text-2xl font-extrabold text-emerald-700 mt-1 block">
-              {leads.filter((l) => l.status === 'Completed').length}
+              {leads.filter((l) => l.status.toLowerCase() === 'completed').length}
             </span>
           </div>
         </div>
@@ -185,9 +213,9 @@ export default function AdminPortalPage() {
               className="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:outline-none"
             >
               <option value="all">All Statuses</option>
-              <option value="New">New</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+              <option value="new">New</option>
+              <option value="in progress">In Progress</option>
+              <option value="completed">Completed</option>
             </select>
           </div>
         </div>
@@ -252,9 +280,9 @@ export default function AdminPortalPage() {
                           value={lead.status}
                           onChange={(e) => handleStatusChange(lead.id, e.target.value)}
                           className={`text-xs font-bold px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer ${
-                            lead.status === 'New'
+                            lead.status.toLowerCase() === 'new'
                               ? 'bg-blue-50 text-blue-700 border-blue-200'
-                              : lead.status === 'In Progress'
+                              : lead.status.toLowerCase() === 'in progress'
                               ? 'bg-amber-50 text-amber-800 border-amber-200'
                               : 'bg-emerald-50 text-emerald-800 border-emerald-200'
                           }`}
