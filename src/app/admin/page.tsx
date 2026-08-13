@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
-import { ShieldCheck, Phone, Mail, MessageCircle, RefreshCw, LogOut, CheckCircle2, Clock, Filter, User, Search, Database, Users, FileText } from 'lucide-react';
+import { ShieldCheck, Phone, Mail, MessageCircle, RefreshCw, LogOut, CheckCircle2, Clock, Filter, User, Search, Database, Users, FileText, Trash2 } from 'lucide-react';
 
 interface UserRequest {
   userDocId: string;
@@ -362,13 +362,14 @@ export default function AdminPortalPage() {
                     <th className="py-3.5 px-4">Email Address</th>
                     <th className="py-3.5 px-4">Mobile Number</th>
                     <th className="py-3.5 px-4">Requested Services Count</th>
-                    <th className="py-3.5 px-4 text-right">Registered On</th>
+                    <th className="py-3.5 px-4">Registered On</th>
+                    <th className="py-3.5 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-500 text-sm">
+                      <td colSpan={6} className="py-8 text-center text-slate-500 text-sm">
                         No registered users found in Firebase users collection.
                       </td>
                     </tr>
@@ -383,7 +384,30 @@ export default function AdminPortalPage() {
                             {Array.isArray(u.requests) ? u.requests.length : 0} Services Requested
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-right text-xs text-slate-500">{u.createdAt}</td>
+                        <td className="py-4 px-4 text-xs text-slate-500">{u.createdAt}</td>
+                        <td className="py-4 px-4 text-right">
+                          <button
+                            onClick={async () => {
+                              if (confirm(`Are you sure you want to delete customer ${u.name} (${u.mobile}) from Firebase?`)) {
+                                try {
+                                  const res = await fetch(`/api/auth/delete-user?id=${u.id}`, { method: 'DELETE' });
+                                  if (res.ok) {
+                                    setRegisteredUsers((prev) => prev.filter((item) => item.id !== u.id));
+                                    fetchLiveAdminData();
+                                  } else {
+                                    alert('Failed to delete user.');
+                                  }
+                                } catch (e) {
+                                  alert('Error deleting user.');
+                                }
+                              }
+                            }}
+                            className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+                            title="Delete User from Firebase"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}

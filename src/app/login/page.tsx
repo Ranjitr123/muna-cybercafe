@@ -145,6 +145,14 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {tab === 'customer' && (
+            <div className="flex justify-end pt-0.5">
+              <Link href="/forgot-password" className="text-xs font-semibold text-brand-600 hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={isSubmitting}

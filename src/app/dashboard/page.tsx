@@ -183,6 +183,29 @@ export default function DashboardPage() {
                   {user.email}
                 </span>
               </div>
+
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  onClick={async () => {
+                    if (confirm('Are you sure you want to permanently delete your account and clear all service requests from Firebase?')) {
+                      try {
+                        const res = await fetch(`/api/auth/delete-user?email=${encodeURIComponent(user.email)}`, { method: 'DELETE' });
+                        if (res.ok) {
+                          alert('Account deleted successfully.');
+                          logout();
+                        } else {
+                          alert('Failed to delete account. Please try again.');
+                        }
+                      } catch (e) {
+                        alert('Server error deleting account.');
+                      }
+                    }
+                  }}
+                  className="w-full text-xs text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 font-bold py-2 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <span>Delete My Account</span>
+                </button>
+              </div>
             </div>
           </div>
 

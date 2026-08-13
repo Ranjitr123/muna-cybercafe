@@ -477,3 +477,88 @@ export async function getUsersFromFirebase(): Promise<any[]> {
 
   return [];
 }
+
+/**
+ * Deletes a user document from users collection in Firebase Cloud Firestore.
+ */
+export async function deleteUserFromFirebase(userDocIdOrEmail: string): Promise<boolean> {
+  const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
+  if (!projectId || !userDocIdOrEmail) return false;
+
+  try {
+    let targetDocId = userDocIdOrEmail;
+
+    // If input is an email or mobile, look up the document ID
+    if (userDocIdOrEmail.includes('@') || userDocIdOrEmail.length < 20) {
+      const users = await getUsersFromFirebase();
+      const cleanInput = userDocIdOrEmail.trim().toLowerCase();
+      const cleanDigits = cleanInput.replace(/\D/g, '');
+
+      const found = users.find((u: any) => {
+        const uEmail = (u.email || '').trim().toLowerCase();
+        const uMobile = (u.mobile || '').replace(/\D/g, '');
+        return (cleanInput.includes('@') && uEmail === cleanInput) || (cleanDigits && uMobile === cleanDigits);
+      });
+
+      if (found) {
+        targetDocId = found.id;
+      }
+    }
+
+    const deleteUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${targetDocId}`;
+    const res = await fetch(deleteUrl, { method: 'DELETE' });
+
+    if (res.ok) {
+      console.log(`[Firebase REST API] Deleted user document ${targetDocId}`);
+      return true;
+    }
+  } catch (e) {
+    console.error('[Firebase] Delete user error:', e);
+  }
+
+  return false;
+}
+
+/**
+ * Updates a user's password in users collection in Firebase Cloud Firestore.
+ */
+export async function updateUserPasswordInFirebase(emailOrMobile: string, newPass: string): Promise<boolean> {
+  const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
+  if (!projectId || !emailOrMobile || !newPass) return false;
+
+  try {
+    const users = await getUsersFromFirebase();
+    const cleanInput = emailOrMobile.trim().toLowerCase();
+    const cleanDigits = cleanInput.replace(/\D/g, '');
+
+    const found = users.find((u: any) => {
+      const uEmail = (u.email || '').trim().toLowerCase();
+      const uMobile = (u.mobile || '').replace(/\D/g, '');
+      return (cleanInput.includes('@') && uEmail === cleanInput) || (cleanDigits && uMobile === cleanDigits);
+    });
+
+    if (!found) return false;
+
+    const patchUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${found.id}?updateMask.fieldPaths=password`;
+    const patchBody = {
+      fields: {
+        password: { stringValue: newPass }
+      }
+    };
+
+    const res = await fetch(patchUrl, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patchBody),
+    });
+
+    if (res.ok) {
+      console.log(`[Firebase REST API] Password updated for user ${found.id}`);
+      return true;
+    }
+  } catch (e) {
+    console.error('[Firebase] Update user password error:', e);
+  }
+
+  return false;
+}
