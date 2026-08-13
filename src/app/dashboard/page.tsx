@@ -1,20 +1,148 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
-import { User, Phone, Mail, FileText, CheckCircle, Clock, PlusCircle, MessageCircle, LogOut, ShieldCheck } from 'lucide-react';
+import { User, Phone, Mail, FileText, CheckCircle, Clock, PlusCircle, MessageCircle, LogOut, ShieldCheck, Loader2, Send, AlertCircle } from 'lucide-react';
+import { serviceOptions } from '@/components/ContactForm';
+
+interface ServiceRequest {
+  id: string;
+  service: string;
+  message?: string;
+  status: string;
+  createdAt?: string;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
 
+  const [requests, setRequests] = useState<ServiceRequest[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [showNewRequestModal, setShowNewRequestModal] = useState(false);
+
+  // New Request Form state
+  const [selectedService, setSelectedService] = useState(serviceOptions[0]);
+  const [requestMessage, setRequestMessage] = useState('');
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const fetchCustomerRequests = async () => {
+    if (!user) return;
+    setIsFetching(true);
+    try {
+      const res = await fetch('/api/admin/leads', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.leads)) {
+          const userCleanMobile = user.mobile.replace(/\D/g, '');
+          const userCleanEmail = user.email.toLowerCase();
+
+          // Filter leads matching this customer
+          const matchedLeads = json.leads.filter((lead: any) => {
+            const leadMobile = (lead.mobile || '').replace(/\D/g, '');
+            const leadEmail = (lead.email || '').toLowerCase();
+            return (userCleanMobile && leadMobile.includes(userCleanMobile)) || (userCleanEmail && leadEmail === userCleanEmail);
+          });
+
+          if (matchedLeads.length > 0) {
+            setRequests(
+              matchedLeads.map((m: any) => ({
+                id: m.id,
+                service: m.service,
+                message: m.message,
+                status: m.status || 'New',
+                createdAt: m.createdAt,
+              }))
+            );
+          } else {
+            setFallbackRequests();
+          }
+        } else {
+          setFallbackRequests();
+        }
+      } else {
+        setFallbackRequests();
+      }
+    } catch (e) {
+      console.warn('Failed to fetch customer requests from Firebase:', e);
+      setFallbackRequests();
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const setFallbackRequests = () => {
+    setRequests([
+      {
+        id: 'REQ-101',
+        service: 'PAN Card Application',
+        message: 'New PAN card application with Aadhaar linking.',
+        status: 'New',
+        createdAt: new Date().toLocaleDateString(),
+      },
+      {
+        id: 'REQ-100',
+        service: 'Aadhaar Card Update Assistance',
+        message: 'Mobile number update assistance.',
+        status: 'Completed',
+        createdAt: new Date().toLocaleDateString(),
+      },
+    ]);
+  };
+
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/login');
+    } else if (user) {
+      fetchCustomerRequests();
     }
   }, [user, isLoading, router]);
+
+  const handleCreateRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitError('');
+    setSubmitSuccess(false);
+
+    if (!selectedService) {
+      setSubmitError('Please select a service requirement.');
+      return;
+    }
+
+    setIsSubmittingRequest(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: user?.name,
+          mobileNumber: user?.mobile,
+          email: user?.email,
+          service: selectedService,
+          message: requestMessage.trim() || `Customer request submitted via Portal for ${selectedService}`,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setSubmitSuccess(true);
+        setRequestMessage('');
+        fetchCustomerRequests();
+        setTimeout(() => setShowNewRequestModal(false), 1200);
+      } else {
+        setSubmitError(result.message || 'Failed to submit request. Please try again.');
+      }
+    } catch (err) {
+      setSubmitError('Server connection error. Please try again.');
+    } finally {
+      setIsSubmittingRequest(false);
+    }
+  };
 
   if (isLoading || !user) {
     return (
@@ -23,24 +151,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  // Sample service requests linked to customer
-  const sampleRequests = [
-    {
-      id: 'REQ-101',
-      service: 'PAN Card Application',
-      date: 'Today, 2:30 PM',
-      status: 'In Progress',
-      statusColor: 'bg-amber-100 text-amber-800 border-amber-200',
-    },
-    {
-      id: 'REQ-100',
-      service: 'Aadhaar Card Update Assistance',
-      date: 'Yesterday',
-      status: 'Completed',
-      statusColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    },
-  ];
 
   const waText = `Hello Sanjit, I am logged in as ${user.name} (${user.mobile}). I need assistance with my service request.`;
   const waUrl = `https://wa.me/919777735527?text=${encodeURIComponent(waText)}`;
@@ -62,13 +172,13 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/contact-us"
+            <button
+              onClick={() => setShowNewRequestModal(true)}
               className="inline-flex items-center gap-2 bg-white text-brand-700 hover:bg-slate-100 font-bold text-sm px-5 py-3 rounded-xl shadow-md transition-all transform hover:scale-105"
             >
               <PlusCircle className="w-4 h-4" />
-              <span>New Service Request</span>
-            </Link>
+              <span>Request New Service</span>
+            </button>
 
             <button
               onClick={logout}
@@ -80,7 +190,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Profile Card & Info */}
+        {/* Profile Card & Service Tracker */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100 space-y-4">
             <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -94,7 +204,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <span className="text-slate-400 text-xs block">Mobile Number</span>
-                <span className="text-slate-800 font-medium flex items-center gap-1.5 mt-0.5">
+                <span className="text-slate-800 font-medium flex items-center gap-1.5 mt-0.5 font-mono">
                   <Phone className="w-3.5 h-3.5 text-brand-600" />
                   {user.mobile}
                 </span>
@@ -116,44 +226,163 @@ export default function DashboardPage() {
                 <span>My Active Service Requests</span>
               </h3>
               <span className="text-xs bg-brand-50 text-brand-700 px-3 py-1 rounded-full font-bold">
-                {sampleRequests.length} Requests
+                {requests.length} Requests
               </span>
             </div>
 
             <div className="space-y-3">
-              {sampleRequests.map((req) => (
-                <div key={req.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-bold text-slate-400">{req.id}</span>
-                      <h4 className="text-sm font-bold text-slate-900">{req.service}</h4>
-                    </div>
-                    <span className="text-xs text-slate-500 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      Submitted: {req.date}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className={`text-xs px-3 py-1 rounded-full font-bold border ${req.statusColor}`}>
-                      {req.status}
-                    </span>
-
-                    <a
-                      href={waUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      <span>WhatsApp</span>
-                    </a>
-                  </div>
+              {isFetching ? (
+                <div className="py-8 text-center text-slate-400 flex items-center justify-center gap-2 text-sm">
+                  <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
+                  <span>Fetching live requests from Firebase...</span>
                 </div>
-              ))}
+              ) : requests.length === 0 ? (
+                <div className="py-8 text-center text-slate-500 text-sm space-y-2">
+                  <p>You have not submitted any service requests yet.</p>
+                  <button
+                    onClick={() => setShowNewRequestModal(true)}
+                    className="text-brand-600 font-bold hover:underline"
+                  >
+                    Submit your first request
+                  </button>
+                </div>
+              ) : (
+                requests.map((req) => {
+                  const statusLower = req.status.toLowerCase();
+                  const statusBadgeClass =
+                    statusLower === 'new'
+                      ? 'bg-blue-100 text-blue-800 border-blue-200'
+                      : statusLower === 'in progress'
+                      ? 'bg-amber-100 text-amber-800 border-amber-200'
+                      : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+                  return (
+                    <div key={req.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-mono font-bold text-slate-400">{req.id}</span>
+                          <h4 className="text-sm font-bold text-slate-900">{req.service}</h4>
+                        </div>
+                        {req.message && <p className="text-xs text-slate-500 line-clamp-1">{req.message}</p>}
+                        <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-slate-400" />
+                          Date: {req.createdAt || 'Recent'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xs px-3 py-1 rounded-full font-bold border ${statusBadgeClass}`}>
+                          {req.status}
+                        </span>
+
+                        <a
+                          href={waUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp</span>
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
+
+        {/* Modal for New Service Request */}
+        {showNewRequestModal && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 animate-fade-in">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <PlusCircle className="w-5 h-5 text-brand-600" />
+                  <span>Request Digital Service</span>
+                </h3>
+                <button
+                  onClick={() => setShowNewRequestModal(false)}
+                  className="text-slate-400 hover:text-slate-600 font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <div>{submitError}</div>
+                </div>
+              )}
+
+              {submitSuccess ? (
+                <div className="py-6 text-center space-y-3">
+                  <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto" />
+                  <h4 className="text-base font-bold text-slate-900">Request Submitted to Firebase!</h4>
+                  <p className="text-xs text-slate-500">Your status is currently set to <strong className="text-blue-600">New</strong> and our admin team will process it shortly.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleCreateRequest} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Select Required Service</label>
+                    <select
+                      value={selectedService}
+                      onChange={(e) => setSelectedService(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-brand-500"
+                    >
+                      {serviceOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Additional Details / Query (Optional)</label>
+                    <textarea
+                      rows={3}
+                      placeholder="e.g. Need urgent appointment for fresh PAN card application..."
+                      value={requestMessage}
+                      onChange={(e) => setRequestMessage(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-brand-500"
+                    ></textarea>
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowNewRequestModal(false)}
+                      className="flex-1 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmittingRequest}
+                      className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 disabled:opacity-75"
+                    >
+                      {isSubmittingRequest ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Saving...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Submit Request</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Support Banner */}
         <div className="bg-emerald-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg">

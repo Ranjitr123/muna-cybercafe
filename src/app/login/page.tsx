@@ -116,7 +116,7 @@ export default function LoginPage() {
                 type="text"
                 value={emailOrMobile}
                 onChange={(e) => setEmailOrMobile(e.target.value)}
-                placeholder={tab === 'customer' ? 'e.g. 9777735527 or email' : 'Username (muna) or email'}
+                placeholder={tab === 'customer' ? 'e.g. 9777735527 or email' : 'Username (Ranjit) or email'}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"
               />
             </div>
@@ -144,19 +144,6 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
-
-          {tab === 'admin' && (
-            <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800 flex items-center justify-between">
-              <span>Admin Login: Username <strong>muna</strong> | Pass <strong>123456</strong></span>
-              <button
-                type="button"
-                onClick={handleAdminShortcut}
-                className="text-brand-700 font-bold underline hover:text-brand-800"
-              >
-                Fill Credentials
-              </button>
-            </div>
-          )}
 
           <button
             type="submit"

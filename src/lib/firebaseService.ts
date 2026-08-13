@@ -204,3 +204,79 @@ export async function getEnquiriesFromFirebase(): Promise<any[]> {
 
   return [];
 }
+
+/**
+ * Updates the status of a customer lead/enquiry in Firebase Cloud Firestore.
+ */
+export async function updateEnquiryStatusInFirebase(docId: string, newStatus: string): Promise<boolean> {
+  const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
+  if (projectId && docId) {
+    try {
+      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/enquiries/${docId}?updateMask.fieldPaths=status`;
+      const body = {
+        fields: {
+          status: { stringValue: newStatus }
+        }
+      };
+
+      const res = await fetch(url, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        console.log(`[Firebase REST API] Lead ${docId} status updated to ${newStatus}`);
+        return true;
+      }
+    } catch (e) {
+      console.warn("[Firebase REST API] Update status error:", e);
+    }
+  }
+  return false;
+}
+
+/**
+ * Fetches all registered customer users from Firebase Cloud Firestore.
+ */
+export async function getUsersFromFirebase(): Promise<any[]> {
+  const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
+  if (projectId) {
+    try {
+      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users`;
+      const res = await fetch(url, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        const docs = json.documents || [];
+        return docs.map((doc: any) => {
+          const f = doc.fields || {};
+          const id = (doc.name || '').split('/').pop() || `U-${Date.now()}`;
+          return {
+            id,
+            name: f.name?.stringValue || 'Registered Customer',
+            email: f.email?.stringValue || '',
+            mobile: f.mobile?.stringValue || '',
+            role: f.role?.stringValue || 'customer',
+            createdAt: f.createdAt?.stringValue ? new Date(f.createdAt.stringValue).toLocaleDateString() : new Date().toLocaleDateString(),
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('[Firebase REST API] Fetch users error:', e);
+    }
+  }
+
+  try {
+    if (isFirebaseConfigured()) {
+      const querySnapshot = await getDocs(collection(db, 'users'));
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    }
+  } catch (err) {
+    console.error('[Firebase SDK] Fetch users error:', err);
+  }
+
+  return [];
+}

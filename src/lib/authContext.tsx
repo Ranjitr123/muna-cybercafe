@@ -24,8 +24,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const DEMO_ADMIN: UserProfile = {
   id: 'admin-1',
-  name: 'Sanjit Rautaray (Admin)',
-  email: 'sanjit007muna@gmail.com',
+  name: 'Ranjit Rautaray (Admin)',
+  email: 'ranjitrautaray475@gmail.com',
   mobile: '9777735527',
   role: 'admin',
   createdAt: new Date().toISOString(),
@@ -56,21 +56,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Admin Login Check
       const isAdminUser =
-        cleanInput === 'muna' ||
+        cleanInput === 'ranjit' ||
+        cleanInput === 'ranjitrautaray475@gmail.com' ||
         cleanInput === 'sanjit007muna@gmail.com' ||
-        cleanInput === 'admin@munatechworld.com' ||
+        cleanInput === 'muna' ||
         cleanInput === '9777735527' ||
         isAdmin;
 
       if (isAdminUser) {
-        if (password === '123456' || password === 'admin123' || password === 'muna007' || password.length >= 6) {
+        if (password === '123456' || password === 'admin123') {
           setUser(DEMO_ADMIN);
           localStorage.setItem('muna_user_session', JSON.stringify(DEMO_ADMIN));
           setIsLoading(false);
           return { success: true };
         } else {
           setIsLoading(false);
-          return { success: false, error: 'Invalid admin password (Hint: 123456)' };
+          return { success: false, error: 'Invalid admin credentials' };
         }
       }
 

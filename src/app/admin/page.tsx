@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
-import { ShieldCheck, Phone, Mail, MessageCircle, RefreshCw, LogOut, CheckCircle2, Clock, Filter, User, Search, Database } from 'lucide-react';
+import { ShieldCheck, Phone, Mail, MessageCircle, RefreshCw, LogOut, CheckCircle2, Clock, Filter, User, Search, Database, Users, FileText } from 'lucide-react';
 
 interface Lead {
   id: string;
@@ -17,25 +17,44 @@ interface Lead {
   createdAt?: string;
 }
 
+interface RegisteredUser {
+  id: string;
+  name: string;
+  email: string;
+  mobile: string;
+  role: string;
+  createdAt: string;
+}
+
 export default function AdminPortalPage() {
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
 
+  const [activeTab, setActiveTab] = useState<'leads' | 'users'>('leads');
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [registeredUsers, setRegisteredUsers] = useState<RegisteredUser[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLiveFirebase, setIsLiveFirebase] = useState(false);
 
-  const fetchLiveLeads = async () => {
+  const fetchLiveAdminData = async () => {
     setIsRefreshing(true);
     try {
       const res = await fetch('/api/admin/leads', { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-          setLeads(json.data);
-          setIsLiveFirebase(true);
+        if (json.success) {
+          if (Array.isArray(json.leads) && json.leads.length > 0) {
+            setLeads(json.leads);
+            setIsLiveFirebase(true);
+          } else {
+            setFallbackLeads();
+          }
+
+          if (Array.isArray(json.users)) {
+            setRegisteredUsers(json.users);
+          }
         } else {
           setFallbackLeads();
         }
@@ -43,7 +62,7 @@ export default function AdminPortalPage() {
         setFallbackLeads();
       }
     } catch (err) {
-      console.warn('Failed to fetch live leads:', err);
+      console.warn('Failed to fetch live admin data:', err);
       setFallbackLeads();
     } finally {
       setIsRefreshing(false);
@@ -92,14 +111,25 @@ export default function AdminPortalPage() {
     if (!isLoading && (!user || user.role !== 'admin')) {
       router.push('/login');
     } else if (user && user.role === 'admin') {
-      fetchLiveLeads();
+      fetchLiveAdminData();
     }
   }, [user, isLoading, router]);
 
-  const handleStatusChange = (leadId: string, newStatus: string) => {
+  const handleStatusChange = async (leadId: string, newStatus: string) => {
+    // Optimistic UI update
     setLeads((prev) =>
       prev.map((lead) => (lead.id === leadId ? { ...lead, status: newStatus } : lead))
     );
+
+    try {
+      await fetch('/api/admin/leads', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId, status: newStatus }),
+      });
+    } catch (e) {
+      console.warn('Failed to persist status change to Firebase:', e);
+    }
   };
 
   const filteredLeads = leads.filter((lead) => {
@@ -110,6 +140,13 @@ export default function AdminPortalPage() {
       lead.service.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  const filteredUsers = registeredUsers.filter(
+    (u) =>
+      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.mobile.includes(searchQuery)
+  );
 
   if (isLoading || !user || user.role !== 'admin') {
     return (
@@ -130,26 +167,26 @@ export default function AdminPortalPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Admin Enquiry Portal</h1>
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Admin Portal</h1>
                 <span className={`text-white text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${isLiveFirebase ? 'bg-emerald-500' : 'bg-amber-500'}`}>
                   <Database className="w-3 h-3" />
-                  <span>{isLiveFirebase ? 'Live Firebase Connected' : 'Local Dynamic Mode'}</span>
+                  <span>{isLiveFirebase ? 'Live Firebase Connected' : 'Local Mode'}</span>
                 </span>
               </div>
               <p className="text-xs text-slate-300">
-                Logged in as <strong>{user.name}</strong> ({user.email})
+                Logged in as Admin: <strong>{user.name}</strong> ({user.email})
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={fetchLiveLeads}
+              onClick={fetchLiveAdminData}
               disabled={isRefreshing}
               className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors disabled:opacity-75"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>Refresh Leads</span>
+              <span>Refresh Data</span>
             </button>
 
             <button
@@ -162,34 +199,59 @@ export default function AdminPortalPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Total Leads</span>
-            <span className="text-2xl font-extrabold text-slate-900 mt-1 block">{leads.length}</span>
-          </div>
+        {/* Tab Selection */}
+        <div className="flex gap-2 p-1.5 bg-slate-200/80 rounded-2xl max-w-md">
+          <button
+            onClick={() => setActiveTab('leads')}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'leads' ? 'bg-white text-navy-900 shadow-md' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            <span>Service Requests ({leads.length})</span>
+          </button>
 
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider block">New Enquiries</span>
-            <span className="text-2xl font-extrabold text-blue-700 mt-1 block">
-              {leads.filter((l) => l.status.toLowerCase() === 'new').length}
-            </span>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider block">In Progress</span>
-            <span className="text-2xl font-extrabold text-amber-700 mt-1 block">
-              {leads.filter((l) => l.status.toLowerCase() === 'in progress').length}
-            </span>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider block">Completed</span>
-            <span className="text-2xl font-extrabold text-emerald-700 mt-1 block">
-              {leads.filter((l) => l.status.toLowerCase() === 'completed').length}
-            </span>
-          </div>
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'users' ? 'bg-white text-navy-900 shadow-md' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Registered Customers ({registeredUsers.length})</span>
+          </button>
         </div>
+
+        {/* Stats Cards (Leads View) */}
+        {activeTab === 'leads' && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Total Enquiries</span>
+              <span className="text-2xl font-extrabold text-slate-900 mt-1 block">{leads.length}</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+              <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider block">New</span>
+              <span className="text-2xl font-extrabold text-blue-700 mt-1 block">
+                {leads.filter((l) => l.status.toLowerCase() === 'new').length}
+              </span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+              <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider block">In Progress</span>
+              <span className="text-2xl font-extrabold text-amber-700 mt-1 block">
+                {leads.filter((l) => l.status.toLowerCase() === 'in progress').length}
+              </span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+              <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider block">Completed</span>
+              <span className="text-2xl font-extrabold text-emerald-700 mt-1 block">
+                {leads.filter((l) => l.status.toLowerCase() === 'completed').length}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Filters & Search */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -197,130 +259,176 @@ export default function AdminPortalPage() {
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
               type="text"
-              placeholder="Search by name, mobile, service..."
+              placeholder={activeTab === 'leads' ? 'Search enquiries by name, mobile, service...' : 'Search registered users...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500"
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Filter className="w-4 h-4 text-slate-400" />
-            <span className="text-xs font-semibold text-slate-600">Filter:</span>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:outline-none"
-            >
-              <option value="all">All Statuses</option>
-              <option value="new">New</option>
-              <option value="in progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
+          {activeTab === 'leads' && (
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Filter className="w-4 h-4 text-slate-400" />
+              <span className="text-xs font-semibold text-slate-600">Filter:</span>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:outline-none"
+              >
+                <option value="all">All Statuses</option>
+                <option value="new">New</option>
+                <option value="in progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          )}
         </div>
 
-        {/* Lead Data Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                <tr>
-                  <th className="py-3.5 px-4">Customer Details</th>
-                  <th className="py-3.5 px-4">Service Required</th>
-                  <th className="py-3.5 px-4">Message / Query</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 text-right">Quick Contact</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredLeads.map((lead) => {
-                  const waUrl = `https://wa.me/91${lead.mobile.replace(/\D/g, '')}?text=${encodeURIComponent(
-                    `Hello ${lead.name}, regarding your enquiry for ${lead.service} at Muna Tech World:`
-                  )}`;
+        {/* Service Requests Table */}
+        {activeTab === 'leads' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <tr>
+                    <th className="py-3.5 px-4">Customer Details</th>
+                    <th className="py-3.5 px-4">Service Required</th>
+                    <th className="py-3.5 px-4">Message / Query</th>
+                    <th className="py-3.5 px-4">Status (Firebase Synced)</th>
+                    <th className="py-3.5 px-4 text-right">Quick Contact</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredLeads.map((lead) => {
+                    const waUrl = `https://wa.me/91${lead.mobile.replace(/\D/g, '')}?text=${encodeURIComponent(
+                      `Hello ${lead.name}, regarding your enquiry for ${lead.service} at Muna Tech World:`
+                    )}`;
 
-                  return (
-                    <tr key={lead.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                          <User className="w-4 h-4 text-slate-400" />
-                          <span>{lead.name}</span>
-                        </div>
-                        <div className="text-xs text-slate-500 space-y-0.5 mt-1">
-                          <div className="flex items-center gap-1">
-                            <Phone className="w-3 h-3 text-emerald-600" />
-                            <a href={`tel:${lead.mobile}`} className="hover:underline font-mono">
-                              {lead.mobile}
+                    return (
+                      <tr key={lead.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="py-4 px-4">
+                          <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                            <User className="w-4 h-4 text-slate-400" />
+                            <span>{lead.name}</span>
+                          </div>
+                          <div className="text-xs text-slate-500 space-y-0.5 mt-1">
+                            <div className="flex items-center gap-1">
+                              <Phone className="w-3 h-3 text-emerald-600" />
+                              <a href={`tel:${lead.mobile}`} className="hover:underline font-mono">
+                                {lead.mobile}
+                              </a>
+                            </div>
+                            {lead.email && (
+                              <div className="flex items-center gap-1 text-slate-400">
+                                <Mail className="w-3 h-3" />
+                                <span className="truncate max-w-[180px]">{lead.email}</span>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="py-4 px-4">
+                          <span className="font-bold text-brand-800 bg-brand-50 px-2.5 py-1 rounded-lg text-xs inline-block">
+                            {lead.service}
+                          </span>
+                          <span className="text-[11px] text-slate-400 block mt-1">Date: {lead.createdAt}</span>
+                        </td>
+
+                        <td className="py-4 px-4">
+                          <p className="text-xs text-slate-600 max-w-xs leading-relaxed line-clamp-2">
+                            {lead.message || 'No additional query.'}
+                          </p>
+                        </td>
+
+                        <td className="py-4 px-4">
+                          <select
+                            value={lead.status}
+                            onChange={(e) => handleStatusChange(lead.id, e.target.value)}
+                            className={`text-xs font-bold px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer ${
+                              lead.status.toLowerCase() === 'new'
+                                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                : lead.status.toLowerCase() === 'in progress'
+                                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            }`}
+                          >
+                            <option value="New">New</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                          </select>
+                        </td>
+
+                        <td className="py-4 px-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <a
+                              href={waUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
+                              title="Chat on WhatsApp"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                            </a>
+
+                            <a
+                              href={`tel:${lead.mobile}`}
+                              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                              title="Call Customer"
+                            >
+                              <Phone className="w-4 h-4" />
                             </a>
                           </div>
-                          {lead.email && (
-                            <div className="flex items-center gap-1 text-slate-400">
-                              <Mail className="w-3 h-3" />
-                              <span className="truncate max-w-[180px]">{lead.email}</span>
-                            </div>
-                          )}
-                        </div>
-                      </td>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
-                      <td className="py-4 px-4">
-                        <span className="font-bold text-brand-800 bg-brand-50 px-2.5 py-1 rounded-lg text-xs inline-block">
-                          {lead.service}
-                        </span>
-                        <span className="text-[11px] text-slate-400 block mt-1">Date: {lead.createdAt}</span>
-                      </td>
-
-                      <td className="py-4 px-4">
-                        <p className="text-xs text-slate-600 max-w-xs leading-relaxed line-clamp-2">
-                          {lead.message || 'No additional query.'}
-                        </p>
-                      </td>
-
-                      <td className="py-4 px-4">
-                        <select
-                          value={lead.status}
-                          onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                          className={`text-xs font-bold px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer ${
-                            lead.status.toLowerCase() === 'new'
-                              ? 'bg-blue-50 text-blue-700 border-blue-200'
-                              : lead.status.toLowerCase() === 'in progress'
-                              ? 'bg-amber-50 text-amber-800 border-amber-200'
-                              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                          }`}
-                        >
-                          <option value="New">New</option>
-                          <option value="In Progress">In Progress</option>
-                          <option value="Completed">Completed</option>
-                        </select>
-                      </td>
-
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <a
-                            href={waUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
-                            title="Chat on WhatsApp"
-                          >
-                            <MessageCircle className="w-4 h-4" />
-                          </a>
-
-                          <a
-                            href={`tel:${lead.mobile}`}
-                            className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                            title="Call Customer"
-                          >
-                            <Phone className="w-4 h-4" />
-                          </a>
-                        </div>
+        {/* Registered Users Table */}
+        {activeTab === 'users' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <tr>
+                    <th className="py-3.5 px-4">User Name</th>
+                    <th className="py-3.5 px-4">Email Address</th>
+                    <th className="py-3.5 px-4">Mobile Number</th>
+                    <th className="py-3.5 px-4">Role</th>
+                    <th className="py-3.5 px-4 text-right">Registered On</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-500 text-sm">
+                        No registered users found in Firebase.
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  ) : (
+                    filteredUsers.map((u) => (
+                      <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="py-4 px-4 font-bold text-slate-900">{u.name}</td>
+                        <td className="py-4 px-4 text-slate-600">{u.email}</td>
+                        <td className="py-4 px-4 text-slate-800 font-mono">{u.mobile}</td>
+                        <td className="py-4 px-4">
+                          <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
+                            {u.role || 'customer'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-right text-xs text-slate-500">{u.createdAt}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
