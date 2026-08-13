@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatbot from '@/components/AIChatbot';
+import { AuthProvider } from '@/lib/authContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -124,11 +125,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col antialiased text-slate-900 bg-slate-50 font-sans">
-        <Header />
-        <main className="flex-grow">{children}</main>
-        <Footer />
-        <WhatsAppButton variant="floating" />
-        <AIChatbot />
+        <AuthProvider>
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+          <WhatsAppButton variant="floating" />
+          <AIChatbot />
+        </AuthProvider>
       </body>
     </html>
   );

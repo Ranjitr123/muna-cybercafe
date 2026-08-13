@@ -3,13 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Monitor, MapPin } from 'lucide-react';
+import { Menu, X, Phone, Monitor, MapPin, User, LogIn, ShieldCheck, LogOut, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '@/lib/authContext';
 import WhatsAppButton from './WhatsAppButton';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,13 +100,44 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <a
-              href="tel:9777735527"
-              className="inline-flex items-center gap-1.5 text-slate-700 hover:text-brand-700 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              <Phone className="w-4 h-4 text-brand-600" />
-              <span>Call Us</span>
-            </a>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href={user.role === 'admin' ? '/admin' : '/dashboard'}
+                  className="inline-flex items-center gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-800 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border border-brand-200"
+                >
+                  {user.role === 'admin' ? <ShieldCheck className="w-4 h-4 text-brand-600" /> : <LayoutDashboard className="w-4 h-4 text-brand-600" />}
+                  <span>{user.role === 'admin' ? 'Admin Portal' : 'My Dashboard'}</span>
+                </Link>
+
+                <button
+                  onClick={logout}
+                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                  title="Log Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-1.5 text-slate-700 hover:text-brand-700 px-3.5 py-2 text-sm font-semibold transition-colors"
+                >
+                  <LogIn className="w-4 h-4 text-brand-600" />
+                  <span>Log In</span>
+                </Link>
+
+                <Link
+                  href="/signup"
+                  className="inline-flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span>Sign Up</span>
+                </Link>
+              </div>
+            )}
+
             <WhatsAppButton variant="header" />
           </div>
 
@@ -142,6 +175,48 @@ export default function Header() {
                 </Link>
               );
             })}
+
+            {user ? (
+              <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
+                <Link
+                  href={user.role === 'admin' ? '/admin' : '/dashboard'}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-3 rounded-lg text-base font-bold bg-brand-50 text-brand-800 flex items-center justify-between"
+                >
+                  <span>{user.role === 'admin' ? 'Admin Portal' : 'My Dashboard'}</span>
+                  <ShieldCheck className="w-5 h-5 text-brand-600" />
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="px-4 py-2.5 text-left text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Log Out ({user.name})</span>
+                </button>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-300 text-slate-800 font-bold text-sm"
+                >
+                  <LogIn className="w-4 h-4 text-brand-600" />
+                  <span>Log In</span>
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-brand-600 text-white font-bold text-sm shadow-md"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Sign Up</span>
+                </Link>
+              </div>
+            )}
           </div>
 
           <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
