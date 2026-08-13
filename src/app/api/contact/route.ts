@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { validateContactForm, sanitizeInput, ContactFormData } from '@/lib/validation';
 import { appendToGoogleSheet } from '@/lib/googleSheets';
