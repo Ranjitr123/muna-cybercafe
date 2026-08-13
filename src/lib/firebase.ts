@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const DEFAULT_FIREBASE_CONFIG = {
@@ -19,6 +19,10 @@ export function isFirebaseConfigured(): boolean {
 
 // Initialize Firebase lazily & safely
 const app = getApps().length === 0 ? initializeApp(DEFAULT_FIREBASE_CONFIG) : getApp();
-export const db = getFirestore(app);
+
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+});
+
 export const storage = getStorage(app);
 export default app;
