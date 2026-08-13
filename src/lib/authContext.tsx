@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { saveUserToFirebase } from '@/lib/firebaseService';
 
 export interface UserProfile {
   id: string;
@@ -124,9 +125,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const storedUsersRaw = localStorage.getItem('muna_registered_users');
       const users: UserProfile[] = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
 
-      // Add new user
+      // Save to local storage
       users.push(newUser);
       localStorage.setItem('muna_registered_users', JSON.stringify(users));
+
+      // Save user registration to Firebase Cloud Firestore
+      await saveUserToFirebase({
+        name: newUser.name,
+        email: newUser.email,
+        mobile: newUser.mobile,
+        role: newUser.role,
+        createdAt: newUser.createdAt,
+      }).catch((err) => console.warn('Background Firebase user save warning:', err));
 
       // Auto-login
       setUser(newUser);
