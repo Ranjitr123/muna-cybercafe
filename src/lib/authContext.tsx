@@ -54,15 +54,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const cleanInput = emailOrMobile.trim().toLowerCase();
 
       // Admin Login Check
-      if (isAdmin || cleanInput === 'sanjit007muna@gmail.com' || cleanInput === 'admin@munatechworld.com' || cleanInput === '9777735527') {
-        if (password === 'admin123' || password === 'muna007' || password.length >= 6) {
+      const isAdminUser =
+        cleanInput === 'muna' ||
+        cleanInput === 'sanjit007muna@gmail.com' ||
+        cleanInput === 'admin@munatechworld.com' ||
+        cleanInput === '9777735527' ||
+        isAdmin;
+
+      if (isAdminUser) {
+        if (password === '123456' || password === 'admin123' || password === 'muna007' || password.length >= 6) {
           setUser(DEMO_ADMIN);
           localStorage.setItem('muna_user_session', JSON.stringify(DEMO_ADMIN));
           setIsLoading(false);
           return { success: true };
         } else {
           setIsLoading(false);
-          return { success: false, error: 'Invalid admin password' };
+          return { success: false, error: 'Invalid admin password (Hint: 123456)' };
         }
       }
 
