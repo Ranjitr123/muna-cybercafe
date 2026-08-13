@@ -104,6 +104,13 @@ export default function DashboardPage() {
     }
   };
 
+  const openNewRequestModal = () => {
+    setSubmitSuccess(false);
+    setSubmitError('');
+    setRequestMessage('');
+    setShowNewRequestModal(true);
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
@@ -133,7 +140,7 @@ export default function DashboardPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={() => setShowNewRequestModal(true)}
+              onClick={openNewRequestModal}
               className="inline-flex items-center gap-2 bg-white text-brand-700 hover:bg-slate-100 font-bold text-sm px-5 py-3 rounded-xl shadow-md transition-all transform hover:scale-105"
             >
               <PlusCircle className="w-4 h-4" />
@@ -200,7 +207,7 @@ export default function DashboardPage() {
                 <div className="py-8 text-center text-slate-500 text-sm space-y-2">
                   <p>You have not submitted any service requests yet.</p>
                   <button
-                    onClick={() => setShowNewRequestModal(true)}
+                    onClick={openNewRequestModal}
                     className="text-brand-600 font-bold hover:underline"
                   >
                     Submit your first request

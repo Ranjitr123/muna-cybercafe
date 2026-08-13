@@ -387,6 +387,7 @@ export async function addCustomerServiceRequestToUser(userEmailOrMobile: string,
     const patchUrl = `https://firestore.googleapis.com/v1/${docName}?updateMask.fieldPaths=requests`;
     const patchBody = {
       fields: {
+        ...existingFields,
         requests: {
           arrayValue: {
             values: updatedRawRequests

@@ -14,16 +14,8 @@ export async function POST(request: NextRequest) {
 
     const cleanInput = emailOrMobile.trim().toLowerCase();
 
-    // Check Admin Login Credentials
-    const isAdminIdentifier =
-      cleanInput === 'ranjit' ||
-      cleanInput === 'ranjitrautaray475@gmail.com' ||
-      cleanInput === 'sanjit007muna@gmail.com' ||
-      cleanInput === 'muna' ||
-      cleanInput === '9777735527' ||
-      isAdmin;
-
-    if (isAdminIdentifier) {
+    // 1. If Admin Portal Tab or explicit Admin Username ('ranjit', 'muna')
+    if (isAdmin || cleanInput === 'ranjit' || cleanInput === 'muna') {
       if (password === '123456' || password === 'admin123') {
         return NextResponse.json(
           {
@@ -39,19 +31,37 @@ export async function POST(request: NextRequest) {
           },
           { status: 200 }
         );
-      } else {
-        return NextResponse.json({ success: false, message: 'Invalid admin credentials' }, { status: 401 });
+      } else if (isAdmin) {
+        return NextResponse.json({ success: false, message: 'Invalid admin password' }, { status: 401 });
       }
     }
 
-    // Customer Firebase Authentication
+    // 2. Customer Firebase Authentication (verifies email/mobile and password against Firebase Cloud Firestore users collection)
     const result = await authenticateUserWithFirebase(emailOrMobile, password);
 
     if (result.success && result.user) {
       return NextResponse.json({ success: true, user: result.user }, { status: 200 });
-    } else {
-      return NextResponse.json({ success: false, message: result.error || 'Invalid customer login credentials' }, { status: 401 });
     }
+
+    // 3. Fallback: If customer login failed but email/mobile is an admin account and password is 123456
+    if ((cleanInput === 'ranjitrautaray475@gmail.com' || cleanInput === 'sanjit007muna@gmail.com' || cleanInput === '9777735527') && (password === '123456' || password === 'admin123')) {
+      return NextResponse.json(
+        {
+          success: true,
+          user: {
+            id: 'admin-1',
+            name: 'Ranjit Rautaray (Admin)',
+            email: 'ranjitrautaray475@gmail.com',
+            mobile: '9777735527',
+            role: 'admin',
+            createdAt: new Date().toISOString(),
+          },
+        },
+        { status: 200 }
+      );
+    }
+
+    return NextResponse.json({ success: false, message: result.error || 'Invalid email/mobile or password' }, { status: 401 });
   } catch (error: any) {
     console.error('[API Auth Login Error]:', error);
     return NextResponse.json({ success: false, message: 'Authentication server error' }, { status: 500 });
