@@ -277,7 +277,143 @@ export async function updateEnquiryStatusInFirebase(docId: string, newStatus: st
 }
 
 /**
- * Fetches all registered customer users from Firebase Cloud Firestore.
+ * Updates the status of a customer request inside a user's document in users collection in Firebase Cloud Firestore.
+ */
+export async function updateUserServiceRequestStatus(userDocId: string, requestId: string, newStatus: string): Promise<boolean> {
+  const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
+  if (!projectId || !userDocId || !requestId) return false;
+
+  try {
+    const docUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${userDocId}`;
+    const res = await fetch(docUrl, { cache: 'no-store' });
+    if (!res.ok) return false;
+
+    const json = await res.json();
+    const existingFields = json.fields || {};
+    const existingRawRequests = existingFields.requests?.arrayValue?.values || [];
+
+    const updatedRawRequests = existingRawRequests.map((r: any) => {
+      const rf = r.mapValue?.fields || {};
+      const id = rf.id?.stringValue || '';
+      if (id === requestId) {
+        return {
+          mapValue: {
+            fields: {
+              ...rf,
+              status: { stringValue: newStatus }
+            }
+          }
+        };
+      }
+      return r;
+    });
+
+    const patchUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${userDocId}?updateMask.fieldPaths=requests`;
+    const patchBody = {
+      fields: {
+        requests: {
+          arrayValue: {
+            values: updatedRawRequests
+          }
+        }
+      }
+    };
+
+    const patchRes = await fetch(patchUrl, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patchBody),
+    });
+
+    if (patchRes.ok) {
+      console.log(`[Firebase REST API] Updated status of request ${requestId} to ${newStatus} in user doc ${userDocId}`);
+      return true;
+    }
+  } catch (e) {
+    console.error('[Firebase] Update user request status error:', e);
+  }
+
+  return false;
+}
+
+/**
+ * Appends a new service request to a user's document in users collection in Firebase Cloud Firestore.
+ */
+export async function addCustomerServiceRequestToUser(userEmailOrMobile: string, serviceData: { service: string; message?: string }): Promise<{ success: boolean; id?: string }> {
+  const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
+  if (!projectId) return { success: false };
+
+  try {
+    const usersUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users`;
+    const res = await fetch(usersUrl, { cache: 'no-store' });
+    if (!res.ok) return { success: false };
+
+    const json = await res.json();
+    const docs = json.documents || [];
+    const cleanInput = userEmailOrMobile.trim().toLowerCase();
+    const cleanDigits = cleanInput.replace(/\D/g, '');
+
+    const userDoc = docs.find((doc: any) => {
+      const f = doc.fields || {};
+      const uEmail = (f.email?.stringValue || '').toLowerCase();
+      const uMobile = (f.mobile?.stringValue || '').replace(/\D/g, '');
+      return (uEmail && uEmail === cleanInput) || (cleanDigits && uMobile === cleanDigits);
+    });
+
+    if (!userDoc) {
+      console.warn('[Firebase] User document not found for request attachment');
+      return { success: false };
+    }
+
+    const docName = userDoc.name;
+    const existingFields = userDoc.fields || {};
+    const existingRawRequests = existingFields.requests?.arrayValue?.values || [];
+
+    const newReqId = `REQ-${Date.now()}`;
+    const newReqValue = {
+      mapValue: {
+        fields: {
+          id: { stringValue: newReqId },
+          service: { stringValue: serviceData.service },
+          message: { stringValue: serviceData.message || '' },
+          status: { stringValue: 'New' },
+          createdAt: { stringValue: new Date().toLocaleDateString() },
+        }
+      }
+    };
+
+    const updatedRawRequests = [...existingRawRequests, newReqValue];
+
+    const patchUrl = `https://firestore.googleapis.com/v1/${docName}?updateMask.fieldPaths=requests`;
+    const patchBody = {
+      fields: {
+        requests: {
+          arrayValue: {
+            values: updatedRawRequests
+          }
+        }
+      }
+    };
+
+    const patchRes = await fetch(patchUrl, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patchBody),
+    });
+
+    if (patchRes.ok) {
+      console.log(`[Firebase REST API] Appended request ${newReqId} to user doc ${docName}`);
+      return { success: true, id: newReqId };
+    }
+  } catch (e) {
+    console.error('[Firebase] Add request to user error:', e);
+  }
+
+  return { success: false };
+}
+
+/**
+ * Fetches all registered customer users with their requested services from Firebase Cloud Firestore.
  */
 export async function getUsersFromFirebase(): Promise<any[]> {
   const projectId = process.env['FIREBASE_PROJECT_ID'] || process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'] || ('muna' + 'tech' + 'world');
@@ -291,6 +427,18 @@ export async function getUsersFromFirebase(): Promise<any[]> {
         return docs.map((doc: any) => {
           const f = doc.fields || {};
           const id = (doc.name || '').split('/').pop() || `U-${Date.now()}`;
+          const rawReqs = f.requests?.arrayValue?.values || [];
+          const requests = rawReqs.map((r: any) => {
+            const rf = r.mapValue?.fields || {};
+            return {
+              id: rf.id?.stringValue || `REQ-${Date.now()}`,
+              service: rf.service?.stringValue || 'Digital Service',
+              message: rf.message?.stringValue || '',
+              status: rf.status?.stringValue || 'New',
+              createdAt: rf.createdAt?.stringValue || new Date().toLocaleDateString(),
+            };
+          });
+
           return {
             id,
             name: f.name?.stringValue || 'Registered Customer',
@@ -299,6 +447,7 @@ export async function getUsersFromFirebase(): Promise<any[]> {
             password: f.password?.stringValue || '',
             role: f.role?.stringValue || 'customer',
             createdAt: f.createdAt?.stringValue ? new Date(f.createdAt.stringValue).toLocaleDateString() : new Date().toLocaleDateString(),
+            requests,
           };
         });
       }

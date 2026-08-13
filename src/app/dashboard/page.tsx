@@ -34,29 +34,13 @@ export default function DashboardPage() {
     if (!user) return;
     setIsFetching(true);
     try {
-      const res = await fetch('/api/admin/leads', { cache: 'no-store' });
+      const res = await fetch(`/api/customer/request?email=${encodeURIComponent(user.email)}&mobile=${encodeURIComponent(user.mobile)}`, {
+        cache: 'no-store',
+      });
       if (res.ok) {
         const json = await res.json();
-        if (json.success && Array.isArray(json.leads)) {
-          const userCleanMobile = user.mobile.replace(/\D/g, '');
-          const userCleanEmail = user.email.toLowerCase();
-
-          // Filter leads matching this customer
-          const matchedLeads = json.leads.filter((lead: any) => {
-            const leadMobile = (lead.mobile || '').replace(/\D/g, '');
-            const leadEmail = (lead.email || '').toLowerCase();
-            return (userCleanMobile && leadMobile.includes(userCleanMobile)) || (userCleanEmail && leadEmail === userCleanEmail);
-          });
-
-          setRequests(
-            matchedLeads.map((m: any) => ({
-              id: m.id,
-              service: m.service,
-              message: m.message,
-              status: m.status || 'New',
-              createdAt: m.createdAt,
-            }))
-          );
+        if (json.success && Array.isArray(json.requests)) {
+          setRequests(json.requests);
         } else {
           setRequests([]);
         }
@@ -64,7 +48,7 @@ export default function DashboardPage() {
         setRequests([]);
       }
     } catch (e) {
-      console.warn('Failed to fetch customer requests from Firebase:', e);
+      console.warn('Failed to fetch customer requests from Firebase users collection:', e);
       setRequests([]);
     } finally {
       setIsFetching(false);
@@ -92,13 +76,12 @@ export default function DashboardPage() {
     setIsSubmittingRequest(true);
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/customer/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: user?.name,
-          mobileNumber: user?.mobile,
           email: user?.email,
+          mobile: user?.mobile,
           service: selectedService,
           message: requestMessage.trim() || `Customer request submitted via Portal for ${selectedService}`,
         }),
@@ -297,8 +280,8 @@ export default function DashboardPage() {
               {submitSuccess ? (
                 <div className="py-6 text-center space-y-3">
                   <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto" />
-                  <h4 className="text-base font-bold text-slate-900">Request Submitted to Firebase!</h4>
-                  <p className="text-xs text-slate-500">Your status is currently set to <strong className="text-blue-600">New</strong> and our admin team will process it shortly.</p>
+                  <h4 className="text-base font-bold text-slate-900">Request Added to Your Account!</h4>
+                  <p className="text-xs text-slate-500">Your request status is set to <strong className="text-blue-600">New</strong> in Firebase.</p>
                 </div>
               ) : (
                 <form onSubmit={handleCreateRequest} className="space-y-4">

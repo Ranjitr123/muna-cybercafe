@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
 import { ShieldCheck, Phone, Mail, MessageCircle, RefreshCw, LogOut, CheckCircle2, Clock, Filter, User, Search, Database, Users, FileText } from 'lucide-react';
 
-interface Lead {
-  id: string;
-  name: string;
-  mobile: string;
-  email?: string;
+interface UserRequest {
+  userDocId: string;
+  userName: string;
+  userMobile: string;
+  userEmail: string;
+  requestId: string;
   service: string;
   message?: string;
-  source?: string;
   status: string;
   createdAt?: string;
 }
@@ -24,14 +24,15 @@ interface RegisteredUser {
   mobile: string;
   role: string;
   createdAt: string;
+  requests?: any[];
 }
 
 export default function AdminPortalPage() {
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'leads' | 'users'>('leads');
-  const [leads, setLeads] = useState<Lead[]>([]);
+  const [activeTab, setActiveTab] = useState<'requests' | 'users'>('requests');
+  const [userRequests, setUserRequests] = useState<UserRequest[]>([]);
   const [registeredUsers, setRegisteredUsers] = useState<RegisteredUser[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -45,9 +46,9 @@ export default function AdminPortalPage() {
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
-          if (Array.isArray(json.leads)) {
-            setLeads(json.leads);
-            setIsLiveFirebase(true);
+          setIsLiveFirebase(true);
+          if (Array.isArray(json.userRequests)) {
+            setUserRequests(json.userRequests);
           }
           if (Array.isArray(json.users)) {
             setRegisteredUsers(json.users);
@@ -69,29 +70,29 @@ export default function AdminPortalPage() {
     }
   }, [user, isLoading, router]);
 
-  const handleStatusChange = async (leadId: string, newStatus: string) => {
+  const handleStatusChange = async (userDocId: string, requestId: string, newStatus: string) => {
     // Optimistic UI update
-    setLeads((prev) =>
-      prev.map((lead) => (lead.id === leadId ? { ...lead, status: newStatus } : lead))
+    setUserRequests((prev) =>
+      prev.map((req) => (req.requestId === requestId ? { ...req, status: newStatus } : req))
     );
 
     try {
       await fetch('/api/admin/leads', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leadId, status: newStatus }),
+        body: JSON.stringify({ userDocId, requestId, status: newStatus }),
       });
     } catch (e) {
-      console.warn('Failed to persist status change to Firebase:', e);
+      console.warn('Failed to persist status change to Firebase user document:', e);
     }
   };
 
-  const filteredLeads = leads.filter((lead) => {
-    const matchesStatus = filterStatus === 'all' || lead.status.toLowerCase() === filterStatus.toLowerCase();
+  const filteredRequests = userRequests.filter((req) => {
+    const matchesStatus = filterStatus === 'all' || req.status.toLowerCase() === filterStatus.toLowerCase();
     const matchesSearch =
-      lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.mobile.includes(searchQuery) ||
-      lead.service.toLowerCase().includes(searchQuery.toLowerCase());
+      req.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.userMobile.includes(searchQuery) ||
+      req.service.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -156,13 +157,13 @@ export default function AdminPortalPage() {
         {/* Tab Selection */}
         <div className="flex gap-2 p-1.5 bg-slate-200/80 rounded-2xl max-w-md">
           <button
-            onClick={() => setActiveTab('leads')}
+            onClick={() => setActiveTab('requests')}
             className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-              activeTab === 'leads' ? 'bg-white text-navy-900 shadow-md' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'requests' ? 'bg-white text-navy-900 shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>Service Requests ({leads.length})</span>
+            <span>User Service Requests ({userRequests.length})</span>
           </button>
 
           <button
@@ -176,32 +177,32 @@ export default function AdminPortalPage() {
           </button>
         </div>
 
-        {/* Stats Cards (Leads View) */}
-        {activeTab === 'leads' && (
+        {/* Stats Cards (Requests View) */}
+        {activeTab === 'requests' && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Total Enquiries</span>
-              <span className="text-2xl font-extrabold text-slate-900 mt-1 block">{leads.length}</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Total Customer Requests</span>
+              <span className="text-2xl font-extrabold text-slate-900 mt-1 block">{userRequests.length}</span>
             </div>
 
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
               <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider block">New</span>
               <span className="text-2xl font-extrabold text-blue-700 mt-1 block">
-                {leads.filter((l) => l.status.toLowerCase() === 'new').length}
+                {userRequests.filter((r) => r.status.toLowerCase() === 'new').length}
               </span>
             </div>
 
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
               <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider block">In Progress</span>
               <span className="text-2xl font-extrabold text-amber-700 mt-1 block">
-                {leads.filter((l) => l.status.toLowerCase() === 'in progress').length}
+                {userRequests.filter((r) => r.status.toLowerCase() === 'in progress').length}
               </span>
             </div>
 
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
               <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider block">Completed</span>
               <span className="text-2xl font-extrabold text-emerald-700 mt-1 block">
-                {leads.filter((l) => l.status.toLowerCase() === 'completed').length}
+                {userRequests.filter((r) => r.status.toLowerCase() === 'completed').length}
               </span>
             </div>
           </div>
@@ -213,14 +214,14 @@ export default function AdminPortalPage() {
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
               type="text"
-              placeholder={activeTab === 'leads' ? 'Search enquiries by name, mobile, service...' : 'Search registered users...'}
+              placeholder={activeTab === 'requests' ? 'Search requests by customer name, mobile, service...' : 'Search registered users...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500"
             />
           </div>
 
-          {activeTab === 'leads' && (
+          {activeTab === 'requests' && (
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <Filter className="w-4 h-4 text-slate-400" />
               <span className="text-xs font-semibold text-slate-600">Filter:</span>
@@ -238,104 +239,112 @@ export default function AdminPortalPage() {
           )}
         </div>
 
-        {/* Service Requests Table */}
-        {activeTab === 'leads' && (
+        {/* User Service Requests Table */}
+        {activeTab === 'requests' && (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   <tr>
                     <th className="py-3.5 px-4">Customer Details</th>
-                    <th className="py-3.5 px-4">Service Required</th>
+                    <th className="py-3.5 px-4">Service Requested</th>
                     <th className="py-3.5 px-4">Message / Query</th>
-                    <th className="py-3.5 px-4">Status (Firebase Synced)</th>
+                    <th className="py-3.5 px-4">Status (Live Firebase User Doc)</th>
                     <th className="py-3.5 px-4 text-right">Quick Contact</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredLeads.map((lead) => {
-                    const waUrl = `https://wa.me/91${lead.mobile.replace(/\D/g, '')}?text=${encodeURIComponent(
-                      `Hello ${lead.name}, regarding your enquiry for ${lead.service} at Muna Tech World:`
-                    )}`;
+                  {filteredRequests.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-500 text-sm">
+                        No customer service requests found in Firebase users collection.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredRequests.map((req) => {
+                      const waUrl = `https://wa.me/91${req.userMobile.replace(/\D/g, '')}?text=${encodeURIComponent(
+                        `Hello ${req.userName}, regarding your requested service for ${req.service} at Muna Tech World:`
+                      )}`;
 
-                    return (
-                      <tr key={lead.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                            <User className="w-4 h-4 text-slate-400" />
-                            <span>{lead.name}</span>
-                          </div>
-                          <div className="text-xs text-slate-500 space-y-0.5 mt-1">
-                            <div className="flex items-center gap-1">
-                              <Phone className="w-3 h-3 text-emerald-600" />
-                              <a href={`tel:${lead.mobile}`} className="hover:underline font-mono">
-                                {lead.mobile}
+                      return (
+                        <tr key={req.requestId} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-4 px-4">
+                            <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                              <User className="w-4 h-4 text-slate-400" />
+                              <span>{req.userName}</span>
+                            </div>
+                            <div className="text-xs text-slate-500 space-y-0.5 mt-1">
+                              <div className="flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-emerald-600" />
+                                <a href={`tel:${req.userMobile}`} className="hover:underline font-mono">
+                                  {req.userMobile}
+                                </a>
+                              </div>
+                              {req.userEmail && (
+                                <div className="flex items-center gap-1 text-slate-400">
+                                  <Mail className="w-3 h-3" />
+                                  <span className="truncate max-w-[180px]">{req.userEmail}</span>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <span className="font-bold text-brand-800 bg-brand-50 px-2.5 py-1 rounded-lg text-xs inline-block">
+                              {req.service}
+                            </span>
+                            <span className="text-[11px] text-slate-400 block mt-1">Date: {req.createdAt}</span>
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <p className="text-xs text-slate-600 max-w-xs leading-relaxed line-clamp-2">
+                              {req.message || 'No additional query.'}
+                            </p>
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <select
+                              value={req.status}
+                              onChange={(e) => handleStatusChange(req.userDocId, req.requestId, e.target.value)}
+                              className={`text-xs font-bold px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer ${
+                                req.status.toLowerCase() === 'new'
+                                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                  : req.status.toLowerCase() === 'in progress'
+                                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                  : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              }`}
+                            >
+                              <option value="New">New</option>
+                              <option value="In Progress">In Progress</option>
+                              <option value="Completed">Completed</option>
+                            </select>
+                          </td>
+
+                          <td className="py-4 px-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <a
+                                href={waUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
+                                title="Chat on WhatsApp"
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                              </a>
+
+                              <a
+                                href={`tel:${req.userMobile}`}
+                                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                                title="Call Customer"
+                              >
+                                <Phone className="w-4 h-4" />
                               </a>
                             </div>
-                            {lead.email && (
-                              <div className="flex items-center gap-1 text-slate-400">
-                                <Mail className="w-3 h-3" />
-                                <span className="truncate max-w-[180px]">{lead.email}</span>
-                              </div>
-                            )}
-                          </div>
-                        </td>
-
-                        <td className="py-4 px-4">
-                          <span className="font-bold text-brand-800 bg-brand-50 px-2.5 py-1 rounded-lg text-xs inline-block">
-                            {lead.service}
-                          </span>
-                          <span className="text-[11px] text-slate-400 block mt-1">Date: {lead.createdAt}</span>
-                        </td>
-
-                        <td className="py-4 px-4">
-                          <p className="text-xs text-slate-600 max-w-xs leading-relaxed line-clamp-2">
-                            {lead.message || 'No additional query.'}
-                          </p>
-                        </td>
-
-                        <td className="py-4 px-4">
-                          <select
-                            value={lead.status}
-                            onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                            className={`text-xs font-bold px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer ${
-                              lead.status.toLowerCase() === 'new'
-                                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                : lead.status.toLowerCase() === 'in progress'
-                                ? 'bg-amber-50 text-amber-800 border-amber-200'
-                                : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                            }`}
-                          >
-                            <option value="New">New</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                          </select>
-                        </td>
-
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <a
-                              href={waUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
-                              title="Chat on WhatsApp"
-                            >
-                              <MessageCircle className="w-4 h-4" />
-                            </a>
-
-                            <a
-                              href={`tel:${lead.mobile}`}
-                              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                              title="Call Customer"
-                            >
-                              <Phone className="w-4 h-4" />
-                            </a>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -352,7 +361,7 @@ export default function AdminPortalPage() {
                     <th className="py-3.5 px-4">User Name</th>
                     <th className="py-3.5 px-4">Email Address</th>
                     <th className="py-3.5 px-4">Mobile Number</th>
-                    <th className="py-3.5 px-4">Role</th>
+                    <th className="py-3.5 px-4">Requested Services Count</th>
                     <th className="py-3.5 px-4 text-right">Registered On</th>
                   </tr>
                 </thead>
@@ -360,7 +369,7 @@ export default function AdminPortalPage() {
                   {filteredUsers.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="py-8 text-center text-slate-500 text-sm">
-                        No registered users found in Firebase.
+                        No registered users found in Firebase users collection.
                       </td>
                     </tr>
                   ) : (
@@ -370,8 +379,8 @@ export default function AdminPortalPage() {
                         <td className="py-4 px-4 text-slate-600">{u.email}</td>
                         <td className="py-4 px-4 text-slate-800 font-mono">{u.mobile}</td>
                         <td className="py-4 px-4">
-                          <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
-                            {u.role || 'customer'}
+                          <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                            {Array.isArray(u.requests) ? u.requests.length : 0} Services Requested
                           </span>
                         </td>
                         <td className="py-4 px-4 text-right text-xs text-slate-500">{u.createdAt}</td>
