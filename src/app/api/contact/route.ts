@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
           mobile: cleanMobile,
           service: cleanService,
           firebaseSaved: firebaseResult.success,
+          firebaseError: firebaseResult.error || null,
           sheetUpdated: sheetResult.success,
           adminNotified: emailResult.adminSent,
           customerNotified: emailResult.customerSent,
