@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Send, CheckCircle, Phone, AlertCircle, Loader2, MessageCircle } from 'lucide-react';
-import { saveEnquiryToFirebase } from '@/lib/firebaseService';
 
 export const serviceOptions = [
   'Online Form Filling',
@@ -94,16 +93,6 @@ export default function ContactForm() {
     setIsSubmitting(true);
 
     try {
-      // Save directly to Firebase Cloud Firestore
-      await saveEnquiryToFirebase({
-        name: formData.fullName.trim(),
-        mobile: formData.mobileNumber.trim(),
-        email: formData.email.trim(),
-        service: formData.service,
-        message: formData.message.trim(),
-        source: 'Website Contact Form (Live Client)',
-      }).catch((err) => console.warn('Client Firebase write error:', err));
-
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
