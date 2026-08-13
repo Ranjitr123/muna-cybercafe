@@ -17,8 +17,42 @@ export interface FirebaseEnquiry {
  */
 export async function saveEnquiryToFirebase(data: FirebaseEnquiry): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
+    const url = "https://firestore.googleapis.com/v1/projects/munatechworld/databases/(default)/documents/enquiries";
+    const body = {
+      fields: {
+        name: { stringValue: data.name || "" },
+        mobile: { stringValue: data.mobile || "" },
+        email: { stringValue: data.email || "" },
+        service: { stringValue: data.service || "" },
+        message: { stringValue: data.message || "" },
+        source: { stringValue: data.source || "Website Contact Form" },
+        status: { stringValue: data.status || "new" },
+        createdAt: { stringValue: data.createdAt || new Date().toISOString() },
+      }
+    };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      const docName = json.name || "";
+      const docId = docName.split("/").pop() || "created";
+      console.log("[Firebase REST API] Lead saved successfully with ID:", docId);
+      return { success: true, id: docId };
+    }
+
+    console.warn("[Firebase REST API] Non-200 status, attempting SDK fallback...");
+  } catch (restErr) {
+    console.warn("[Firebase REST API] Fetch error, attempting SDK fallback:", restErr);
+  }
+
+  // Fallback to Firebase JS SDK
+  try {
     if (!isFirebaseConfigured()) {
-      console.warn('[Firebase] Config keys missing in environment. Skipping Firebase write.');
       return { success: false, error: 'Firebase configuration missing' };
     }
 
@@ -28,7 +62,7 @@ export async function saveEnquiryToFirebase(data: FirebaseEnquiry): Promise<{ su
       createdAt: data.createdAt || new Date().toISOString(),
     });
 
-    console.log('[Firebase] Enquiry saved successfully with ID:', docRef.id);
+    console.log('[Firebase SDK] Enquiry saved successfully with ID:', docRef.id);
     return { success: true, id: docRef.id };
   } catch (error: any) {
     console.error('[Firebase Error] Failed to save enquiry:', error);

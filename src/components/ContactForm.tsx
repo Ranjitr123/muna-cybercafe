@@ -95,7 +95,7 @@ export default function ContactForm() {
 
     try {
       // Save directly to Firebase Cloud Firestore
-      saveEnquiryToFirebase({
+      await saveEnquiryToFirebase({
         name: formData.fullName.trim(),
         mobile: formData.mobileNumber.trim(),
         email: formData.email.trim(),
