@@ -80,6 +80,7 @@ export async function saveUserToFirebase(user: {
   name: string;
   email: string;
   mobile: string;
+  password?: string;
   role?: string;
   createdAt?: string;
 }): Promise<{ success: boolean; id?: string }> {
@@ -92,6 +93,7 @@ export async function saveUserToFirebase(user: {
           name: { stringValue: user.name || "" },
           email: { stringValue: user.email || "" },
           mobile: { stringValue: user.mobile || "" },
+          password: { stringValue: user.password || "" },
           role: { stringValue: user.role || "customer" },
           createdAt: { stringValue: user.createdAt || new Date().toISOString() },
         }
@@ -127,6 +129,44 @@ export async function saveUserToFirebase(user: {
   }
 
   return { success: false };
+}
+
+/**
+ * Authenticates user credentials live against Firebase Cloud Firestore.
+ */
+export async function authenticateUserWithFirebase(
+  emailOrMobile: string,
+  pass: string
+): Promise<{ success: boolean; user?: any; error?: string }> {
+  const users = await getUsersFromFirebase();
+  const cleanInput = emailOrMobile.trim().toLowerCase();
+  const cleanDigits = cleanInput.replace(/\D/g, '');
+
+  const matchedUser = users.find((u: any) => {
+    const userEmail = (u.email || '').toLowerCase();
+    const userMobileDigits = (u.mobile || '').replace(/\D/g, '');
+    return (userEmail && userEmail === cleanInput) || (cleanDigits && userMobileDigits === cleanDigits);
+  });
+
+  if (!matchedUser) {
+    return { success: false, error: 'User not found in Firebase. Please sign up first.' };
+  }
+
+  if (matchedUser.password && matchedUser.password !== pass) {
+    return { success: false, error: 'Incorrect password' };
+  }
+
+  return {
+    success: true,
+    user: {
+      id: matchedUser.id,
+      name: matchedUser.name,
+      email: matchedUser.email,
+      mobile: matchedUser.mobile,
+      role: matchedUser.role || 'customer',
+      createdAt: matchedUser.createdAt,
+    },
+  };
 }
 
 /**
@@ -256,6 +296,7 @@ export async function getUsersFromFirebase(): Promise<any[]> {
             name: f.name?.stringValue || 'Registered Customer',
             email: f.email?.stringValue || '',
             mobile: f.mobile?.stringValue || '',
+            password: f.password?.stringValue || '',
             role: f.role?.stringValue || 'customer',
             createdAt: f.createdAt?.stringValue ? new Date(f.createdAt.stringValue).toLocaleDateString() : new Date().toLocaleDateString(),
           };

@@ -52,58 +52,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (emailOrMobile: string, password: string, isAdmin = false) => {
     setIsLoading(true);
     try {
-      const cleanInput = emailOrMobile.trim().toLowerCase();
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emailOrMobile, password, isAdmin }),
+      });
 
-      // Admin Login Check
-      const isAdminUser =
-        cleanInput === 'ranjit' ||
-        cleanInput === 'ranjitrautaray475@gmail.com' ||
-        cleanInput === 'sanjit007muna@gmail.com' ||
-        cleanInput === 'muna' ||
-        cleanInput === '9777735527' ||
-        isAdmin;
+      const data = await res.json();
 
-      if (isAdminUser) {
-        if (password === '123456' || password === 'admin123') {
-          setUser(DEMO_ADMIN);
-          localStorage.setItem('muna_user_session', JSON.stringify(DEMO_ADMIN));
-          setIsLoading(false);
-          return { success: true };
-        } else {
-          setIsLoading(false);
-          return { success: false, error: 'Invalid admin credentials' };
-        }
-      }
-
-      // Customer Login Check from local storage accounts
-      const storedUsersRaw = localStorage.getItem('muna_registered_users');
-      const users: UserProfile[] = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
-
-      const foundUser = users.find(
-        (u) => u.email.toLowerCase() === cleanInput || u.mobile.replace(/\D/g, '') === cleanInput.replace(/\D/g, '')
-      );
-
-      if (foundUser) {
-        setUser(foundUser);
-        localStorage.setItem('muna_user_session', JSON.stringify(foundUser));
+      if (res.ok && data.success && data.user) {
+        setUser(data.user);
+        localStorage.setItem('muna_user_session', JSON.stringify(data.user));
         setIsLoading(false);
         return { success: true };
+      } else {
+        setIsLoading(false);
+        return { success: false, error: data.message || 'Invalid login credentials' };
       }
-
-      // Auto-create guest customer profile if user inputs valid email/mobile for quick access
-      const newCustomer: UserProfile = {
-        id: `user-${Date.now()}`,
-        name: cleanInput.includes('@') ? cleanInput.split('@')[0] : 'Customer',
-        email: cleanInput.includes('@') ? cleanInput : `${cleanInput}@customer.local`,
-        mobile: cleanInput.replace(/\D/g, '') || '9800000000',
-        role: 'customer',
-        createdAt: new Date().toISOString(),
-      };
-
-      setUser(newCustomer);
-      localStorage.setItem('muna_user_session', JSON.stringify(newCustomer));
-      setIsLoading(false);
-      return { success: true };
     } catch (err: any) {
       setIsLoading(false);
       return { success: false, error: err.message || 'Login failed' };
@@ -113,38 +78,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (name: string, email: string, mobile: string, password: string) => {
     setIsLoading(true);
     try {
-      const newUser: UserProfile = {
-        id: `user-${Date.now()}`,
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        mobile: mobile.trim(),
-        role: 'customer',
-        createdAt: new Date().toISOString(),
-      };
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, mobile, password }),
+      });
 
-      // Retrieve existing stored users
-      const storedUsersRaw = localStorage.getItem('muna_registered_users');
-      const users: UserProfile[] = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+      const data = await res.json();
 
-      // Save to local storage
-      users.push(newUser);
-      localStorage.setItem('muna_registered_users', JSON.stringify(users));
-
-      // Save user registration to Firebase Cloud Firestore
-      await saveUserToFirebase({
-        name: newUser.name,
-        email: newUser.email,
-        mobile: newUser.mobile,
-        role: newUser.role,
-        createdAt: newUser.createdAt,
-      }).catch((err) => console.warn('Background Firebase user save warning:', err));
-
-      // Auto-login
-      setUser(newUser);
-      localStorage.setItem('muna_user_session', JSON.stringify(newUser));
-
-      setIsLoading(false);
-      return { success: true };
+      if (res.ok && data.success && data.user) {
+        setUser(data.user);
+        localStorage.setItem('muna_user_session', JSON.stringify(data.user));
+        setIsLoading(false);
+        return { success: true };
+      } else {
+        setIsLoading(false);
+        return { success: false, error: data.message || 'Signup failed' };
+      }
     } catch (err: any) {
       setIsLoading(false);
       return { success: false, error: err.message || 'Signup failed' };
