@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://munatechworld.netlify.app/sitemap.xml
+Sitemap: https://cybercafe-odisha.netlify.app/sitemap.xml
