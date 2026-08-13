@@ -25,7 +25,7 @@ export async function saveEnquiryToFirebase(data: FirebaseEnquiry): Promise<{ su
     const docRef = await addDoc(collection(db, 'enquiries'), {
       ...data,
       status: data.status || 'new',
-      createdAt: serverTimestamp(),
+      createdAt: data.createdAt || new Date().toISOString(),
     });
 
     console.log('[Firebase] Enquiry saved successfully with ID:', docRef.id);
