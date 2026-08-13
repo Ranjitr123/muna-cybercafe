@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateContactForm, sanitizeInput, ContactFormData } from '@/lib/validation';
 import { appendToGoogleSheet } from '@/lib/googleSheets';
 import { sendEnquiryEmails } from '@/lib/email';
+import { saveEnquiryToFirebase } from '@/lib/firebaseService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,7 +28,17 @@ export async function POST(request: NextRequest) {
     const cleanService = sanitizeInput(body.service);
     const cleanMessage = sanitizeInput(body.message);
 
-    // 3. Append to Google Sheets
+    // 3. Save to Firebase Cloud Firestore
+    const firebaseResult = await saveEnquiryToFirebase({
+      name: cleanName,
+      mobile: cleanMobile,
+      email: cleanEmail,
+      service: cleanService,
+      message: cleanMessage,
+      source: 'Website Contact Form',
+    });
+
+    // 4. Append to Google Sheets
     const sheetResult = await appendToGoogleSheet({
       name: cleanName,
       mobile: cleanMobile,
@@ -37,7 +48,7 @@ export async function POST(request: NextRequest) {
       source: 'Website Contact Form',
     });
 
-    // 4. Send Emails (Admin Notification + Customer Acknowledgement)
+    // 5. Send Emails (Admin Notification + Customer Acknowledgement)
     const emailResult = await sendEnquiryEmails({
       name: cleanName,
       mobile: cleanMobile,
@@ -54,6 +65,7 @@ export async function POST(request: NextRequest) {
           name: cleanName,
           mobile: cleanMobile,
           service: cleanService,
+          firebaseSaved: firebaseResult.success,
           sheetUpdated: sheetResult.success,
           adminNotified: emailResult.adminSent,
           customerNotified: emailResult.customerSent,
