@@ -48,50 +48,27 @@ export default function DashboardPage() {
             return (userCleanMobile && leadMobile.includes(userCleanMobile)) || (userCleanEmail && leadEmail === userCleanEmail);
           });
 
-          if (matchedLeads.length > 0) {
-            setRequests(
-              matchedLeads.map((m: any) => ({
-                id: m.id,
-                service: m.service,
-                message: m.message,
-                status: m.status || 'New',
-                createdAt: m.createdAt,
-              }))
-            );
-          } else {
-            setFallbackRequests();
-          }
+          setRequests(
+            matchedLeads.map((m: any) => ({
+              id: m.id,
+              service: m.service,
+              message: m.message,
+              status: m.status || 'New',
+              createdAt: m.createdAt,
+            }))
+          );
         } else {
-          setFallbackRequests();
+          setRequests([]);
         }
       } else {
-        setFallbackRequests();
+        setRequests([]);
       }
     } catch (e) {
       console.warn('Failed to fetch customer requests from Firebase:', e);
-      setFallbackRequests();
+      setRequests([]);
     } finally {
       setIsFetching(false);
     }
-  };
-
-  const setFallbackRequests = () => {
-    setRequests([
-      {
-        id: 'REQ-101',
-        service: 'PAN Card Application',
-        message: 'New PAN card application with Aadhaar linking.',
-        status: 'New',
-        createdAt: new Date().toLocaleDateString(),
-      },
-      {
-        id: 'REQ-100',
-        service: 'Aadhaar Card Update Assistance',
-        message: 'Mobile number update assistance.',
-        status: 'Completed',
-        createdAt: new Date().toLocaleDateString(),
-      },
-    ]);
   };
 
   useEffect(() => {

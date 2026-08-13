@@ -45,66 +45,20 @@ export default function AdminPortalPage() {
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
-          if (Array.isArray(json.leads) && json.leads.length > 0) {
+          if (Array.isArray(json.leads)) {
             setLeads(json.leads);
             setIsLiveFirebase(true);
-          } else {
-            setFallbackLeads();
           }
-
           if (Array.isArray(json.users)) {
             setRegisteredUsers(json.users);
           }
-        } else {
-          setFallbackLeads();
         }
-      } else {
-        setFallbackLeads();
       }
     } catch (err) {
       console.warn('Failed to fetch live admin data:', err);
-      setFallbackLeads();
     } finally {
       setIsRefreshing(false);
     }
-  };
-
-  const setFallbackLeads = () => {
-    setLeads([
-      {
-        id: 'L-1001',
-        name: 'Rajesh Kumar Mohanty',
-        mobile: '9777735527',
-        email: 'rajesh@example.com',
-        service: 'PAN Card Application',
-        message: 'Need urgent new PAN card processing with Aadhaar link.',
-        source: 'Website Contact Form',
-        status: 'In Progress',
-        createdAt: new Date().toLocaleDateString(),
-      },
-      {
-        id: 'L-1002',
-        name: 'Priyanka Das',
-        mobile: '9668358119',
-        email: 'priyanka@gmail.com',
-        service: 'Scholarship Application',
-        message: 'Assistance for Medhabruti scholarship portal submission.',
-        source: 'Website Contact Form',
-        status: 'New',
-        createdAt: new Date().toLocaleDateString(),
-      },
-      {
-        id: 'L-1003',
-        name: 'Soumya Ranjan Swain',
-        mobile: '9861000000',
-        email: 'soumya@yahoo.com',
-        service: 'Passport Assistance',
-        message: 'Fresh passport application appointment booking.',
-        source: 'Website Contact Form',
-        status: 'Completed',
-        createdAt: new Date().toLocaleDateString(),
-      },
-    ]);
   };
 
   useEffect(() => {
