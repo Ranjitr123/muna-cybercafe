@@ -16,8 +16,10 @@ export interface FirebaseEnquiry {
  * Saves a customer contact/enquiry form submission to Firebase Cloud Firestore.
  */
 export async function saveEnquiryToFirebase(data: FirebaseEnquiry): Promise<{ success: boolean; id?: string; error?: string }> {
-  try {
-    const url = "https://firestore.googleapis.com/v1/projects/munatechworld/databases/(default)/documents/enquiries";
+  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  if (projectId) {
+    try {
+      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/enquiries`;
     const body = {
       fields: {
         name: { stringValue: data.name || "" },
@@ -49,6 +51,7 @@ export async function saveEnquiryToFirebase(data: FirebaseEnquiry): Promise<{ su
   } catch (restErr) {
     console.warn("[Firebase REST API] Fetch error, attempting SDK fallback:", restErr);
   }
+}
 
   // Fallback to Firebase JS SDK
   try {
