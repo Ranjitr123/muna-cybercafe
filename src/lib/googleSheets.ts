@@ -37,7 +37,7 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
         message: data.message || '',
         status: data.status || 'New',
         source: data.source || 'Website',
-        action: data.action || 'general',
+        action: data.action || (targetSheetName === 'customer request' ? 'service_request' : 'contact_enquiry'),
         sheet: targetSheetName,
         sheetName: targetSheetName,
         targetSheet: targetSheetName,
@@ -86,9 +86,9 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
     const doc = new GoogleSpreadsheet(sheetId, serviceAccountAuth);
     await doc.loadInfo();
 
-    let sheet = doc.sheetsByTitle[targetSheetName];
+    let sheet = doc.sheetsByTitle[targetSheetName] || doc.sheetsByTitle['customer request'];
     if (!sheet) {
-      sheet = doc.sheetsByIndex[0];
+      sheet = doc.sheetsByIndex[1] || doc.sheetsByIndex[0];
     }
 
     const submissionDate = new Date().toLocaleString('en-IN', {
