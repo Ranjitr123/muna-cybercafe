@@ -26,7 +26,10 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
     }
   }
 
-  // 1. Google Apps Script Web App Integration Method (GET + POST with query parameters)
+  const isCustomer = targetSheetName === 'customer request' || data.action === 'signup' || data.action === 'service_request';
+  const actionParam = isCustomer ? (data.action || 'service_request') : 'contact_enquiry';
+
+  // 1. Google Apps Script Web App Integration Method (GET + POST fallback)
   if (webAppUrl && webAppUrl.trim() !== '') {
     try {
       const queryParams = new URLSearchParams({
@@ -36,8 +39,8 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
         service: data.service || '',
         message: data.message || '',
         status: data.status || 'New',
-        source: data.source || 'Website',
-        action: data.action || (targetSheetName === 'customer request' ? 'service_request' : 'contact_enquiry'),
+        source: data.source || (isCustomer ? 'Customer Signup / Request' : 'Website Contact Form'),
+        action: actionParam,
         sheet: targetSheetName,
         sheetName: targetSheetName,
         targetSheet: targetSheetName,
@@ -46,12 +49,13 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
 
       const targetUrl = `${webAppUrl}${webAppUrl.includes('?') ? '&' : '?'}${queryParams.toString()}`;
 
+      // Try GET request with query params
       const response = await fetch(targetUrl, {
         method: 'GET',
         redirect: 'follow',
       });
 
-      console.log(`[Google Apps Script GET Status for ${data.source} -> Sheet: "${targetSheetName}"]:`, response.status);
+      console.log(`[Google Apps Script GET Status for "${data.source}" -> Sheet: "${targetSheetName}"]:`, response.status);
       return { success: true, message: `Saved to ${targetSheetName} via Google Apps Script` };
     } catch (err: any) {
       console.error('[Google Apps Script Error]:', err?.message || err);
