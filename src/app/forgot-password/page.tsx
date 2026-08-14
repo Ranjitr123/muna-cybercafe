@@ -173,8 +173,8 @@ export default function ForgotPasswordPage() {
         {step === 2 && (
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div className="bg-blue-50 border border-blue-200 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
-              <div>A 6-digit OTP verification code has been dispatched to <strong>{recipient}</strong>.</div>
-              <div className="text-slate-500 text-[11px]">Please check your mobile messages / email and enter the OTP below.</div>
+              <div>A 6-digit OTP verification code has been sent to your Email address: <strong>{recipient}</strong>.</div>
+              <div className="text-slate-500 text-[11px]">Please check your email inbox (and spam folder) and enter the OTP code below.</div>
             </div>
 
             <div>
