@@ -54,11 +54,26 @@ export async function POST(request: NextRequest) {
     const result = await addCustomerServiceRequestToUser(userEmailOrMobile, { service, message });
 
     if (result.success) {
-      // Dual-sync: Append service request to Google Sheet / Excel
+      // Look up registered user's actual Full Name, Email, and Mobile Number
+      const users = await getUsersFromFirebase();
+      const cleanInput = userEmailOrMobile.trim().toLowerCase();
+      const cleanDigits = cleanInput.replace(/\D/g, '');
+
+      const foundUser = users.find((u: any) => {
+        const uEmail = (u.email || '').trim().toLowerCase();
+        const uMobile = (u.mobile || '').replace(/\D/g, '');
+        return (cleanInput.includes('@') && uEmail === cleanInput) || (cleanDigits && uMobile === cleanDigits);
+      });
+
+      const userName = foundUser?.name || 'Registered Customer';
+      const userEmail = foundUser?.email || email || '';
+      const userMobile = foundUser?.mobile || mobile || '';
+
+      // Dual-sync: Append service request to Google Sheet / Excel with customer details
       appendToGoogleSheet({
-        name: email || mobile || 'Customer Request',
-        email: email || '',
-        mobile: mobile || '',
+        name: userName,
+        email: userEmail,
+        mobile: userMobile,
         service: service,
         message: message || '',
         status: 'New',
