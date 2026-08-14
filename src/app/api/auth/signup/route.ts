@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         status: 'Active Customer',
         source: 'Customer Signup',
         action: 'signup',
+        sheetName: 'customer request',
       }).catch((e) => console.warn('[Google Sheet Signup Sync Error]:', e));
 
       return NextResponse.json(

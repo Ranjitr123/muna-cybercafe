@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
         status: 'New',
         source: 'Customer Dashboard Request',
         action: 'service_request',
+        sheetName: 'customer request',
       }).catch((e) => console.warn('[Google Sheet Request Sync Error]:', e));
 
       return NextResponse.json({ success: true, id: result.id }, { status: 200 });

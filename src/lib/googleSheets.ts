@@ -10,10 +10,21 @@ export interface SheetRowData {
   status?: string;
   source?: string;
   action?: 'signup' | 'service_request' | 'contact_enquiry';
+  sheetName?: string;
 }
 
 export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success: boolean; message?: string }> {
   const webAppUrl = process.env['GOOGLE_SHEET_WEB_APP_URL'];
+
+  // Determine target sheet tab name ('Form enquiry' vs 'customer request')
+  let targetSheetName = data.sheetName;
+  if (!targetSheetName) {
+    if (data.action === 'contact_enquiry' || (data.source && data.source.toLowerCase().includes('contact'))) {
+      targetSheetName = 'Form enquiry';
+    } else {
+      targetSheetName = 'customer request';
+    }
+  }
 
   // 1. Google Apps Script Web App Integration Method (GET + POST with query parameters)
   if (webAppUrl && webAppUrl.trim() !== '') {
@@ -27,6 +38,10 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
         status: data.status || 'New',
         source: data.source || 'Website',
         action: data.action || 'general',
+        sheet: targetSheetName,
+        sheetName: targetSheetName,
+        targetSheet: targetSheetName,
+        tab: targetSheetName,
       });
 
       const targetUrl = `${webAppUrl}${webAppUrl.includes('?') ? '&' : '?'}${queryParams.toString()}`;
@@ -36,8 +51,8 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
         redirect: 'follow',
       });
 
-      console.log(`[Google Apps Script GET Status for ${data.source}]:`, response.status);
-      return { success: true, message: 'Saved via Google Apps Script Web App' };
+      console.log(`[Google Apps Script GET Status for ${data.source} -> Sheet: "${targetSheetName}"]:`, response.status);
+      return { success: true, message: `Saved to ${targetSheetName} via Google Apps Script` };
     } catch (err: any) {
       console.error('[Google Apps Script Error]:', err?.message || err);
     }
@@ -50,13 +65,13 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
 
   if (!sheetId || !clientEmail || !privateKey) {
     console.log(
-      '[Excel / Google Sheet Log]: Syncing event recorded:',
+      `[Excel / Google Sheet Log] Target Tab: "${targetSheetName}" | Event recorded:`,
       {
         timestamp: new Date().toISOString(),
         ...data,
       }
     );
-    return { success: true, message: 'Recorded in logs (Google Apps Script / Sheet active)' };
+    return { success: true, message: `Recorded in logs for ${targetSheetName}` };
   }
 
   try {
@@ -71,7 +86,10 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
     const doc = new GoogleSpreadsheet(sheetId, serviceAccountAuth);
     await doc.loadInfo();
 
-    const sheet = doc.sheetsByIndex[0];
+    let sheet = doc.sheetsByTitle[targetSheetName];
+    if (!sheet) {
+      sheet = doc.sheetsByIndex[0];
+    }
 
     const submissionDate = new Date().toLocaleString('en-IN', {
       timeZone: 'Asia/Kolkata',

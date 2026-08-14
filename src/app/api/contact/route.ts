@@ -48,6 +48,8 @@ export async function POST(request: NextRequest) {
       service: cleanService,
       message: cleanMessage,
       source: 'Website Contact Form',
+      action: 'contact_enquiry',
+      sheetName: 'Form enquiry',
     });
 
     // 5. Send Emails (Admin Notification + Customer Acknowledgement)
