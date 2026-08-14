@@ -25,7 +25,7 @@ function cleanDeadlineDate(rawDateStr: string): string {
 
 // Dynamic API Endpoint fetching directly from Google Sheets CMS
 export async function GET() {
-  const webAppUrl = process.env.GOOGLE_SHEET_WEB_APP_URL;
+  const webAppUrl = process.env['GOOGLE_SHEET_WEB_APP_URL'] || 'https://script.google.com/macros/s/AKfycbynpiNsruyrGmQFl5CrwgQbAWJvfu-m_0vTDEr926l8e7gTI9GNzebntwohWOlpX_F6/exec';
 
   if (webAppUrl && webAppUrl.trim() !== '') {
     try {

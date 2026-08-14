@@ -14,7 +14,7 @@ export interface SheetRowData {
 }
 
 export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success: boolean; message?: string }> {
-  const webAppUrl = process.env['GOOGLE_SHEET_WEB_APP_URL'];
+  const webAppUrl = process.env['GOOGLE_SHEET_WEB_APP_URL'] || 'https://script.google.com/macros/s/AKfycbynpiNsruyrGmQFl5CrwgQbAWJvfu-m_0vTDEr926l8e7gTI9GNzebntwohWOlpX_F6/exec';
 
   // Determine target sheet tab name ('Form enquiry' vs 'customer request')
   let targetSheetName = data.sheetName;
