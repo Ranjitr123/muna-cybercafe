@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { saveUserToFirebase, getUsersFromFirebase } from '@/lib/firebaseService';
+import { appendToGoogleSheet } from '@/lib/googleSheets';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,6 +43,18 @@ export async function POST(request: NextRequest) {
     const result = await saveUserToFirebase(newUser);
 
     if (result.success) {
+      // Dual-sync: Append user registration record to Google Sheet / Excel
+      appendToGoogleSheet({
+        name: newUser.name,
+        email: newUser.email,
+        mobile: newUser.mobile,
+        service: 'User Account Created',
+        message: 'Customer Registered',
+        status: 'Active Customer',
+        source: 'Customer Signup',
+        action: 'signup',
+      }).catch((e) => console.warn('[Google Sheet Signup Sync Error]:', e));
+
       return NextResponse.json(
         {
           success: true,

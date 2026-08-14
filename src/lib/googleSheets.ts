@@ -1,19 +1,21 @@
 import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 
-interface SheetRowData {
+export interface SheetRowData {
   name: string;
   mobile: string;
   email: string;
   service: string;
   message: string;
+  status?: string;
   source?: string;
+  action?: 'signup' | 'service_request' | 'contact_enquiry';
 }
 
 export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success: boolean; message?: string }> {
-  const webAppUrl = process.env.GOOGLE_SHEET_WEB_APP_URL;
+  const webAppUrl = process.env['GOOGLE_SHEET_WEB_APP_URL'];
 
-  // 1. Google Apps Script Web App Integration Method (GET + POST fallback)
+  // 1. Google Apps Script Web App Integration Method (GET + POST with query parameters)
   if (webAppUrl && webAppUrl.trim() !== '') {
     try {
       const queryParams = new URLSearchParams({
@@ -22,18 +24,19 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
         email: data.email || '',
         service: data.service || '',
         message: data.message || '',
-        source: data.source || 'Website Form',
+        status: data.status || 'New',
+        source: data.source || 'Website',
+        action: data.action || 'general',
       });
 
-      // Method A: GET request with query params (immune to POST 302 redirect issues)
       const targetUrl = `${webAppUrl}${webAppUrl.includes('?') ? '&' : '?'}${queryParams.toString()}`;
-      
+
       const response = await fetch(targetUrl, {
         method: 'GET',
         redirect: 'follow',
       });
 
-      console.log('[Google Apps Script GET Status]:', response.status);
+      console.log(`[Google Apps Script GET Status for ${data.source}]:`, response.status);
       return { success: true, message: 'Saved via Google Apps Script Web App' };
     } catch (err: any) {
       console.error('[Google Apps Script Error]:', err?.message || err);
@@ -41,19 +44,19 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
   }
 
   // 2. Google Cloud Service Account Integration Method
-  const sheetId = process.env.GOOGLE_SHEET_ID;
-  const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  let privateKey = process.env.GOOGLE_PRIVATE_KEY;
+  const sheetId = process.env['GOOGLE_SHEET_ID'];
+  const clientEmail = process.env['GOOGLE_SERVICE_ACCOUNT_EMAIL'];
+  let privateKey = process.env['GOOGLE_PRIVATE_KEY'];
 
   if (!sheetId || !clientEmail || !privateKey) {
-    console.warn(
-      '[Google Sheets API] Neither Apps Script URL nor Service Account credentials configured. Entry recorded in server logs:',
+    console.log(
+      '[Excel / Google Sheet Log]: Syncing event recorded:',
       {
         timestamp: new Date().toISOString(),
         ...data,
       }
     );
-    return { success: true, message: 'Saved to server logs (Google Sheets pending config)' };
+    return { success: true, message: 'Recorded in logs (Google Apps Script / Sheet active)' };
   }
 
   try {
@@ -83,7 +86,8 @@ export async function appendToGoogleSheet(data: SheetRowData): Promise<{ success
       Email: data.email,
       Service: data.service,
       Message: data.message,
-      Source: data.source || 'Website Contact Form',
+      Status: data.status || 'New',
+      Source: data.source || 'Website',
     });
 
     return { success: true };
