@@ -270,9 +270,9 @@ export default function SignupPage() {
         {/* STEP 2: Enter OTP Code */}
         {step === 2 && (
           <form onSubmit={handleCompleteSignup} className="space-y-4">
-            <div className="bg-blue-50 border border-blue-200 p-3 rounded-xl text-xs text-blue-900 space-y-1">
-              <div>Verification OTP sent to <strong>{formData.email}</strong>.</div>
-              <div className="font-bold text-blue-700">Verification OTP Code: <span className="bg-white px-2 py-0.5 rounded border border-blue-300 font-mono tracking-widest text-sm text-brand-800">{generatedOtp}</span></div>
+            <div className="bg-blue-50 border border-blue-200 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+              <div>A 6-digit OTP verification code has been dispatched to <strong>{formData.email || formData.mobile}</strong>.</div>
+              <div className="text-slate-500 text-[11px]">Please check your mobile messages / email and enter the OTP below.</div>
             </div>
 
             <div>

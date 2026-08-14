@@ -13,11 +13,11 @@ export async function POST(request: NextRequest) {
     }
 
     const cleanInput = recipient.trim().toLowerCase();
+    const cleanDigits = recipient.replace(/\D/g, '');
 
     // If forgot_password, check if user actually exists in Firebase
     if (type === 'forgot_password') {
       const users = await getUsersFromFirebase();
-      const cleanDigits = cleanInput.replace(/\D/g, '');
 
       const found = users.find((u: any) => {
         const uEmail = (u.email || '').trim().toLowerCase();
@@ -32,6 +32,21 @@ export async function POST(request: NextRequest) {
 
     // Generate 6-digit OTP code
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Trigger Real SMS to Indian Mobile Number if FAST2SMS_API_KEY is configured
+    const fast2smsApiKey = process.env['FAST2SMS_API_KEY'] || process.env['SMS_API_KEY'];
+    if (fast2smsApiKey && cleanDigits.length === 10) {
+      try {
+        const smsRes = await fetch(
+          `https://www.fast2sms.com/dev/bulkV2?authorization=${fast2smsApiKey}&route=otp&variables_values=${generatedOtp}&flash=0&numbers=${cleanDigits}`,
+          { method: 'GET' }
+        );
+        const smsJson = await smsRes.json();
+        console.log(`[Fast2SMS Dispatch Response]:`, smsJson);
+      } catch (smsErr) {
+        console.warn('[Fast2SMS Dispatch Error]:', smsErr);
+      }
+    }
 
     console.log(`[OTP GENERATED] Type: ${type}, Recipient: ${recipient}, OTP: ${generatedOtp}`);
 
