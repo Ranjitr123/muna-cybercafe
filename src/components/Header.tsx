@@ -29,6 +29,7 @@ export default function Header() {
     { name: 'Home', href: '/' },
     { name: 'About Us', href: '/about-us' },
     { name: 'Courses', href: '/courses' },
+    { name: 'Game Zone 🎮', href: '/games' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Contact Us', href: '/contact-us' },
   ];

@@ -58,6 +58,11 @@ export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAI
                 </Link>
               </li>
               <li>
+                <Link href="/games" className="hover:text-white transition-colors inline-flex items-center gap-2 text-brand-400 font-semibold">
+                  <ArrowRight className="w-3.5 h-3.5 text-brand-400" /> Game Zone 🎮
+                </Link>
+              </li>
+              <li>
                 <Link href="/gallery" className="hover:text-white transition-colors inline-flex items-center gap-2">
                   <ArrowRight className="w-3.5 h-3.5 text-brand-400" /> Photo Gallery
                 </Link>
