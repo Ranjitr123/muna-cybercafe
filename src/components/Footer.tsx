@@ -59,7 +59,7 @@ export default function Footer({ adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAI
               </li>
               <li>
                 <Link href="/games" className="hover:text-white transition-colors inline-flex items-center gap-2 text-brand-400 font-semibold">
-                  <ArrowRight className="w-3.5 h-3.5 text-brand-400" /> Game Zone 🎮
+                  <ArrowRight className="w-3.5 h-3.5 text-brand-400" /> Games
                 </Link>
               </li>
               <li>
