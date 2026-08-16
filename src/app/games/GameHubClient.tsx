@@ -6,7 +6,7 @@ import LudoGame from '@/components/games/LudoGame';
 import SnakeGame from '@/components/games/SnakeGame';
 import MemoryMatchGame from '@/components/games/MemoryMatchGame';
 import ConnectFourGame from '@/components/games/ConnectFourGame';
-import { Gamepad2, Sparkles, Trophy, Users, ShieldCheck, Play, Zap, Grid, Swords, Brain } from 'lucide-react';
+import { Gamepad2, Sparkles, Users, ShieldCheck, Play, Zap } from 'lucide-react';
 
 type GameId = 'tictactoe' | 'ludo' | 'snake' | 'memory' | 'connect4';
 
@@ -95,7 +95,7 @@ export default function GameHubClient() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-brand-500 selection:text-white">
       {/* Hero Banner Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 bg-gradient-to-b from-navy-900 via-slate-900 to-slate-950 border-b border-slate-800">
+      <section className="relative overflow-hidden pt-16 sm:pt-24 pb-16 bg-gradient-to-b from-navy-900 via-slate-900 to-slate-950 border-b border-slate-800">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-600/20 via-transparent to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           

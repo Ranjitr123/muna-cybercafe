@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Trophy, User, Bot, RotateCcw } from 'lucide-react';
+import { RefreshCw, Trophy, User, Bot } from 'lucide-react';
 
 const ROWS = 6;
 const COLS = 7;

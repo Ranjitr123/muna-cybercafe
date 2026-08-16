@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Trophy, Clock, Sparkles, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, Trophy } from 'lucide-react';
 
 const EMOJI_POOL = ['🎮', '⚡', '🚀', '🏆', '🎯', '💻', '🎨', '📱', '🤖', '🛡️', '🔑', '🌟'];
 

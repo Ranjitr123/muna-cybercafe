@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Dices, RefreshCw, Trophy, User, Bot, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Dices, RefreshCw, Trophy, User, Bot } from 'lucide-react';
 
 type PlayerColor = 'red' | 'green' | 'yellow' | 'blue';
 
