@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import TicTacToeGame from '@/components/games/TicTacToeGame';
 import LudoGame from '@/components/games/LudoGame';
 import SnakeGame from '@/components/games/SnakeGame';
@@ -96,8 +94,6 @@ export default function GameHubClient() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-brand-500 selection:text-white">
-      <Header />
-
       {/* Hero Banner Section */}
       <section className="relative overflow-hidden pt-12 pb-16 bg-gradient-to-b from-navy-900 via-slate-900 to-slate-950 border-b border-slate-800">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-600/20 via-transparent to-transparent pointer-events-none" />
@@ -238,8 +234,6 @@ export default function GameHubClient() {
         </section>
 
       </main>
-
-      <Footer />
     </div>
   );
 }
